@@ -88,7 +88,7 @@ export default function Profile() {
         setAddresses(newAddresses);
     };
     return (
-        <main className="bg-light d-flex justify-content-center">
+        <main className="d-flex justify-content-center">
             <div className="container mt-3 mb-4 bg-white p-3">
                 <section>
                     <form className="">

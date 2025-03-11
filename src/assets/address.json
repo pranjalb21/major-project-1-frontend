@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "street": "123 Street",
+        "city": "345 City",
+        "state": "678 State",
+        "pin": 123456,
+        "isPrimary": false
+    },
+    {
+        "id": 2,
+        "street": "123 Street",
+        "city": "345 City",
+        "state": "678 State",
+        "pin": 123456,
+        "isPrimary": true
+    },
+    {
+        "id": 3,
+        "street": "123 Street",
+        "city": "345 City",
+        "state": "678 State",
+        "pin": 123456,
+        "isPrimary": false
+    }
+]
