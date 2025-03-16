@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import productDataList from "../assets/products.json";
 import addressData from "../assets/address.json";
 
@@ -8,23 +8,25 @@ const useProduct = () => useContext(ProductContext);
 export default useProduct;
 
 export function ProductProvider({ children }) {
-    const [productList, setProductList] = useState(productDataList);
+    const [productList, setProductList] = useState();
+    const [selectedProduct, setSelectedProduct] = useState();
+    const [wishlist, setWishlist] = useState();
+    const [cart, setCart] = useState();
     const [addresses, setAddresses] = useState(addressData);
     const [loading, setLoading] = useState(false);
 
-    function hi() {
-        const obj = {};
-        for (const p of productList) {
-            if (!obj[p.category]) {
-                obj[p.category] = true;
-            }
-        }
-        console.log(Object.keys(obj));
+    async function initialLoad() {
+        setLoading(true);
+        fetchProduct("all");
+        fetchWishlist();
+        fetchCart();
     }
-    // hi();
+    useEffect(() => {
+        initialLoad();
+    }, []);
 
     // Add and remove from cart
-    const toggleCart = (productId) => {
+    const toggleCart = async (productId) => {
         const newProductList = productList.map((p) => {
             if (p.id == productId) {
                 return { ...p, isAddedToCart: !p.isAddedToCart };
@@ -59,6 +61,51 @@ export function ProductProvider({ children }) {
         setAddresses(newAddresses);
     };
 
+    // Productlist changes based on category
+    const fetchProduct = async (type) => {
+        setLoading(true);
+        setSelectedProduct(null);
+        setProductList(null);
+        await fetch(`http://localhost:5000/products/category/${type}`)
+            .then((res) => res.json())
+            .then((data) => setProductList(data.data))
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
+    };
+
+    // Get product by product ID
+    const getProductById = async (productId) => {
+        setLoading(true);
+        setSelectedProduct(null);
+        await fetch(`http://localhost:5000/products/id/${productId}`)
+            .then((res) => res.json())
+            .then((data) => setSelectedProduct(data.data))
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
+    };
+
+    // Fetch wishlist
+    const fetchWishlist = async () => {
+        setLoading(true);
+        setWishlist(null);
+        await fetch(`http://localhost:5000/wishlist/all`)
+            .then((res) => res.json())
+            .then((data) => setWishlist(data.data))
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
+    };
+
+    // Fetch cart
+    const fetchCart = async () => {
+        setLoading(true);
+        setWishlist(null);
+        await fetch(`http://localhost:5000/cart/all`)
+            .then((res) => res.json())
+            .then((data) => setCart(data.data))
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
+    };
+
     // Toggle primary address selection
     const handlePrimaryAddress = (addressId) => {
         const newAddresses = addresses.map((a) =>
@@ -69,7 +116,19 @@ export function ProductProvider({ children }) {
 
     return (
         <ProductContext.Provider
-            value={{ productList, toggleCart, toggleWishList }}
+            value={{
+                productList,
+                loading,
+                selectedProduct,
+                wishlist,
+                cart,
+                toggleCart,
+                toggleWishList,
+                fetchProduct,
+                getProductById,
+                fetchWishlist,
+                fetchCart,
+            }}
         >
             {children}
         </ProductContext.Provider>

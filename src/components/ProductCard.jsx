@@ -4,33 +4,27 @@ import { FaRegHeart } from "react-icons/fa";
 import useProduct from "../contexts/ProductContext";
 import { Link } from "react-router-dom";
 
-export default function ProductCard({ productId }) {
-    const { toggleCart, toggleWishList, productList } = useProduct();
-    const [product, setProduct] = useState(
-        productList.filter((p) => p.id == productId)[0]
-    );
-    useEffect(() => {
-        const selectedProduct = productList.filter((p) => p.id == productId)[0];
-        setProduct(selectedProduct);
-    }, [productList]);
+export default function ProductCard({ product }) {
     return (
         <div className="col-6 col-md-4 col-lg-3">
-            <div
-                className="card shadow shadow-sm position-relative"
-            >
+            <div className="card shadow shadow-sm position-relative">
                 <div className="position-absolute fs-1 end-0 me-1 mt-1 top-0 p-1 fs-4  bg-light rounded-circle shadow-sm border d-flex">
-                    {product.isAddedToWishlist ? (
+                    {/* {product.isAddedToWishlist ? (
                         <MdFavorite
                             style={{ cursor: "pointer" }}
-                            onClick={() => toggleWishList(product.id)}
+                            onClick={() => console.log("wishlist")}
                             className="text-danger"
                         />
                     ) : (
                         <FaRegHeart
                             style={{ cursor: "pointer" }}
-                            onClick={() => toggleWishList(product.id)}
+                            onClick={() => console.log("wishlist")}
                         />
-                    )}
+                    )} */}
+                    <FaRegHeart
+                        style={{ cursor: "pointer" }}
+                        onClick={() => console.log("wishlist")}
+                    />
                 </div>
                 <img
                     src={product.thumbnail}
@@ -39,7 +33,7 @@ export default function ProductCard({ productId }) {
                 />
                 <div className="card-body">
                     <Link
-                        to={`/product/${product.id}`}
+                        to={`/product/${product._id}`}
                         className=" text-decoration-none"
                     >
                         <h6 className=" text-decoration-none text-black">
@@ -50,7 +44,7 @@ export default function ProductCard({ productId }) {
 
                     <button
                         className="btn btn-primary btn-sm"
-                        onClick={() => toggleCart(product.id)}
+                        onClick={() => console.log("cart")}
                     >
                         {product.isAddedToCart
                             ? "Remove from Cart"

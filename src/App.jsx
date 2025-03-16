@@ -9,31 +9,29 @@ import Cart from "./pages/Cart";
 import Footer from "./components/Footer";
 import Checkout from "./pages/Checkout";
 import ProductDetails from "./pages/ProductDetails";
-import { ProductProvider } from "./contexts/ProductContext";
+import useProduct, { ProductProvider } from "./contexts/ProductContext";
 import Products from "./pages/Products";
+import Spinner from "./components/Spinner";
 
 function App() {
+    const { loading } = useProduct();
     return (
-        <ProductProvider>
-            <div className="d-flex flex-column min-vh-100 bg-light">
-                <BrowserRouter>
-                    <Navbar />
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/wishlist" element={<Wishlist />} />
-                        <Route path="/cart" element={<Cart />} />
-                        <Route path="/checkout" element={<Checkout />} />
-                        <Route
-                            path="/product/:id"
-                            element={<ProductDetails />}
-                        />
-                        <Route path="/products/:filter" element={<Products />} />
-                    </Routes>
-                    <Footer />
-                </BrowserRouter>
-            </div>
-        </ProductProvider>
+        <div className="d-flex flex-column min-vh-100 bg-light position-relative">
+            <BrowserRouter>
+                <Navbar />
+                {loading && <Spinner />}
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/product/:id" element={<ProductDetails />} />
+                    <Route path="/products/filter/:filter" element={<Products />} />
+                </Routes>
+                <Footer />
+            </BrowserRouter>
+        </div>
     );
 }
 
