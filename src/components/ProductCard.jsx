@@ -5,26 +5,27 @@ import useProduct from "../contexts/ProductContext";
 import { Link } from "react-router-dom";
 
 export default function ProductCard({ product }) {
+    const {
+        toggleWishList,
+        isExistInWishlist,
+        addItemToCart,
+    } = useProduct();
     return (
         <div className="col-6 col-md-4 col-lg-3">
             <div className="card shadow shadow-sm position-relative">
                 <div className="position-absolute fs-1 end-0 me-1 mt-1 top-0 p-1 fs-4  bg-light rounded-circle shadow-sm border d-flex">
-                    {/* {product.isAddedToWishlist ? (
+                    {isExistInWishlist(product._id) ? (
                         <MdFavorite
                             style={{ cursor: "pointer" }}
-                            onClick={() => console.log("wishlist")}
+                            onClick={() => toggleWishList(product._id)}
                             className="text-danger"
                         />
                     ) : (
                         <FaRegHeart
                             style={{ cursor: "pointer" }}
-                            onClick={() => console.log("wishlist")}
+                            onClick={() => toggleWishList(product._id)}
                         />
-                    )} */}
-                    <FaRegHeart
-                        style={{ cursor: "pointer" }}
-                        onClick={() => console.log("wishlist")}
-                    />
+                    )}
                 </div>
                 <img
                     src={product.thumbnail}
@@ -44,11 +45,9 @@ export default function ProductCard({ product }) {
 
                     <button
                         className="btn btn-primary btn-sm"
-                        onClick={() => console.log("cart")}
+                        onClick={() => product && addItemToCart(product._id)}
                     >
-                        {product.isAddedToCart
-                            ? "Remove from Cart"
-                            : "Add to Cart"}
+                        {product && "Add to Cart"}
                     </button>
                 </div>
             </div>

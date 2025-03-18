@@ -27,6 +27,8 @@ export function ProductProvider({ children }) {
 
     // Add and remove from cart
     const toggleCart = async (productId) => {
+        if (isExistInCart(productId)) {
+        }
         const newProductList = productList.map((p) => {
             if (p.id == productId) {
                 return { ...p, isAddedToCart: !p.isAddedToCart };
@@ -37,16 +39,131 @@ export function ProductProvider({ children }) {
         setProductList(newProductList);
     };
 
-    // Add and remove from wishlist
-    const toggleWishList = (productId) => {
-        const newProductList = productList.map((p) => {
-            if (p.id == productId) {
-                return { ...p, isAddedToWishlist: !p.isAddedToWishlist };
+    // Add item in cart
+    const addItemToCart = async (productId) => {
+        setLoading(true);
+        const addedItem = await fetch(
+            `http://localhost:5000/cart/add/${productId}`,
+            { method: "POST" }
+        )
+            .then((res) => res.json())
+            .then((data) => data.data)
+            .catch((err) => console.log(err));
+
+        if (addedItem) {
+            if (isExistInCart(productId)) {
+                const existingProductIndex = cart.findIndex(
+                    (cartItem) => cartItem.productId._id === productId
+                );
+
+                const newCart = [...cart];
+                newCart.splice(existingProductIndex, 1, addedItem);
+
+                setCart(newCart);
             } else {
-                return p;
+                const newCart = [...cart, addedItem];
+                setCart(newCart);
             }
-        });
-        setProductList(newProductList);
+        } else {
+            console.log("Error while adding to cart");
+        }
+        setLoading(false);
+    };
+
+    // Remove item from cart
+    const removeItemFromCart = async (productId) => {
+        setLoading(true);
+        const deletedItem = await fetch(
+            `http://localhost:5000/cart/remove/${productId}`,
+            { method: "DELETE" }
+        )
+            .then((res) => res.json())
+            .then((data) => data.data)
+            .catch((err) => console.log(err));
+        if (deletedItem) {
+            if (deletedItem.productCount > 0) {
+                const existingProductIndex = cart.findIndex(
+                    (cartItem) => cartItem.productId._id === productId
+                );
+                const newCart = [...cart];
+                newCart.splice(existingProductIndex, 1, deletedItem);
+                setCart(newCart);
+            } else {
+                const newCart = cart.filter(
+                    (cartItem) => cartItem.productId._id !== productId
+                );
+                setCart(newCart);
+            }
+        } else {
+            console.log("Error while removing from cart");
+        }
+        setLoading(false);
+    };
+    // Delete item from cart
+    const deleteItemFromCart = async (productId) => {
+        setLoading(true);
+        const deletedItem = await fetch(
+            `http://localhost:5000/cart/delete/${productId}`,
+            { method: "DELETE" }
+        )
+            .then((res) => res.json())
+            .then((data) => data.data)
+            .catch((err) => console.log(err));
+        if (deletedItem) {
+            const newCart = cart.filter(
+                (cartItem) => cartItem.productId._id !== productId
+            );
+            setCart(newCart);
+        } else {
+            console.log("Error while deleting from cart");
+        }
+        setLoading(false);
+    };
+
+    // Add and remove from wishlist
+    const toggleWishList = async (productId) => {
+        setLoading(true);
+
+        if (isExistInWishlist(productId)) {
+            await fetch(`http://localhost:5000/wishlist/remove/${productId}`, {
+                method: "DELETE",
+            })
+                .then(() => {
+                    const newWishlist = wishlist.filter(
+                        (product) => product.productId._id !== productId
+                    );
+                    setWishlist(newWishlist);
+                })
+                .catch((err) => console.log(err))
+                .finally(() => setLoading(false));
+        } else {
+            await fetch(`http://localhost:5000/wishlist/add/${productId}`, {
+                method: "POST",
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    const newWishlist = [...wishlist, data.data];
+                    setWishlist(newWishlist);
+                })
+                .catch((err) => console.log(err))
+                .finally(() => setLoading(false));
+        }
+    };
+
+    // Check if product exist into wishlist
+    const isExistInWishlist = (productId) => {
+        const isExists = wishlist?.filter(
+            (product) => product.productId._id === productId
+        );
+        return isExists?.length > 0;
+    };
+
+    // Check if product exist in cart
+    const isExistInCart = (productId) => {
+        const isExists = cart?.filter(
+            (product) => product.productId._id === productId
+        );
+        return isExists?.length > 0;
     };
 
     // Add new address
@@ -124,10 +241,15 @@ export function ProductProvider({ children }) {
                 cart,
                 toggleCart,
                 toggleWishList,
+                addItemToCart,
+                removeItemFromCart,
                 fetchProduct,
                 getProductById,
                 fetchWishlist,
                 fetchCart,
+                isExistInWishlist,
+                isExistInCart,
+                deleteItemFromCart,
             }}
         >
             {children}

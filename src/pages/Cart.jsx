@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useProduct from "../contexts/ProductContext";
+import CountModifier from "../components/CountModifier";
 export default function Cart() {
     const { cart, fetchCart } = useProduct();
 
@@ -63,7 +64,9 @@ export default function Cart() {
                                 <tr>
                                     <th scope="col">Sl No.</th>
                                     <th scope="col">Product Name</th>
-                                    <th scope="col">Quantity</th>
+                                    <th scope="col" className="text-center">
+                                        Quantity
+                                    </th>
                                     <th scope="col">MRP</th>
                                     <th scope="col">Discount(%)</th>
                                     <th scope="col">Price</th>
@@ -73,8 +76,17 @@ export default function Cart() {
                                 {cart.map((p, i) => (
                                     <tr key={p.productId._id}>
                                         <th scope="row">{i + 1}</th>
-                                        <td>{p.productId.title}</td>
-                                        <td>{p.productCount}</td>
+                                        <td>
+                                            <Link
+                                                className="text-decoration-none"
+                                                to={`/product/${p.productId._id}`}
+                                            >
+                                                {p.productId.title}
+                                            </Link>
+                                        </td>
+                                        <td>
+                                            <CountModifier product={p} />
+                                        </td>
                                         <td>${p.productId.price}</td>
                                         <td>
                                             {p.productId.discountPercentage}
@@ -92,15 +104,15 @@ export default function Cart() {
                                 <tr>
                                     <th scope="row"></th>
                                     <td className="fw-medium">Total:</td>
-                                    <td className="fw-medium">
+                                    <td className="fw-medium text-center">
                                         {calculateTotalQuantity(cart)}
                                     </td>
-                                    <td></td>
+                                    <td>
+                                        <s>${calculateTotalPrice(cart)}</s>
+                                    </td>
                                     <td></td>
                                     <td className="fw-medium">
-                                        <s>${calculateTotalPrice(cart)}</s>
-                                        <br />$
-                                        {calculateTotalDiscountedPrice(cart)}
+                                        ${calculateTotalDiscountedPrice(cart)}
                                     </td>
                                 </tr>
                             </tbody>
