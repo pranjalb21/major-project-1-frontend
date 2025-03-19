@@ -69,6 +69,40 @@ export function ProductProvider({ children }) {
         }
         setLoading(false);
     };
+    // Add item in cart
+    const addItemWithQuantityToCart = async (productId, quantity) => {
+        setLoading(true);
+        const addedItem = await fetch(
+            `http://localhost:5000/cart/addQuantity/${productId}`,
+            {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ quantity }),
+            }
+        )
+            .then((res) => res.json())
+            .then((data) => data.data)
+            .catch((err) => console.log(err));
+
+        if (addedItem) {
+            if (isExistInCart(productId)) {
+                const existingProductIndex = cart.findIndex(
+                    (cartItem) => cartItem.productId._id === productId
+                );
+
+                const newCart = [...cart];
+                newCart.splice(existingProductIndex, 1, addedItem);
+
+                setCart(newCart);
+            } else {
+                const newCart = [...cart, addedItem];
+                setCart(newCart);
+            }
+        } else {
+            console.log("Error while adding to cart");
+        }
+        setLoading(false);
+    };
 
     // Remove item from cart
     const removeItemFromCart = async (productId) => {
@@ -250,6 +284,7 @@ export function ProductProvider({ children }) {
                 isExistInWishlist,
                 isExistInCart,
                 deleteItemFromCart,
+                addItemWithQuantityToCart,
             }}
         >
             {children}

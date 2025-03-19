@@ -4,15 +4,14 @@ import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 export default function Rating({ rate }) {
     let elements = [];
     for (let i = 1; i <= 5; i++) {
-        if (i <= Math.floor(rate)) {
+        if (rate >= i) {
             elements.push(<FaStar key={i} />);
+        } else if (rate > i - 1) {
+            elements.push(<FaStarHalfAlt key={i} />);
         } else {
-            if (Math.floor(rate) < Math.ceil(rate)) {
-                elements.push(<FaStarHalfAlt key={i} />);
-            } else {
-                elements.push(<FaRegStar key={i} />);
-            }
+            elements.push(<FaRegStar key={i} />);
         }
+
     }
     return (
         <div className="d-flex align-items-center text-warning">
