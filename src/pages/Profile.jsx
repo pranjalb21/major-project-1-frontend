@@ -1,36 +1,23 @@
 import React, { useState } from "react";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { CiSquarePlus } from "react-icons/ci";
-
-const addressData = [
-    {
-        id: 1,
-        street: "123 Street",
-        city: "345 City",
-        state: "678 State",
-        pin: 123456,
-        isPrimary: false,
-    },
-    {
-        id: 2,
-        street: "123 Street",
-        city: "345 City",
-        state: "678 State",
-        pin: 123456,
-        isPrimary: true,
-    },
-    {
-        id: 3,
-        street: "123 Street",
-        city: "345 City",
-        state: "678 State",
-        pin: 123456,
-        isPrimary: false,
-    },
-];
+import useProduct from "../contexts/ProductContext";
+import { BiEdit } from "react-icons/bi";
 
 export default function Profile() {
-    const [addresses, setAddresses] = useState(addressData);
+    const defaultAddress = {
+        street: "",
+        city: "",
+        state: "",
+        pin: "",
+    };
+    const {
+        addresses,
+        addAddress,
+        updateAddress,
+        deleteAddress,
+        changePrimaryAddress,
+    } = useProduct();
     const [showAddForm, setShowAddForm] = useState(false);
     const [newAddressData, setNewAddressData] = useState({
         street: "",
@@ -38,55 +25,73 @@ export default function Profile() {
         state: "",
         pin: "",
     });
+    const [error, setError] = useState();
 
     const handleShowAddForm = () => {
         if (!showAddForm) {
             setShowAddForm(true);
-            setNewAddressData({
-                street: "",
-                city: "",
-                state: "",
-                pin: "",
-            });
+            setNewAddressData(defaultAddress);
+            setError(null);
         }
+    };
+
+    const handelEditAddress = (addressData) => {
+        setShowAddForm(true);
+        setError(null);
+        setNewAddressData({
+            id: addressData._id,
+            street: addressData.street,
+            city: addressData.city,
+            state: addressData.state,
+            pin: addressData.pin,
+            isPrimary: addressData.isPrimary,
+        });
     };
 
     const handleCancelShowAddForm = () => {
         if (showAddForm) {
             setShowAddForm(false);
-            setNewAddressData({
-                street: "",
-                city: "",
-                state: "",
-                pin: "",
-            });
+            setNewAddressData(defaultAddress);
+            setError(null);
         }
     };
 
     const handleSaveAddress = (e) => {
         e.preventDefault();
-        const data = {
-            ...newAddressData,
-            id: addresses.length + 1,
-            isPrimary: false,
-        };
-        const newAddressArr = [...addresses, data];
-        setAddresses(newAddressArr);
-        setShowAddForm(false);
-        setNewAddressData({
-            street: "",
-            city: "",
-            state: "",
-            pin: "",
-        });
+        if (
+            !newAddressData.street ||
+            !newAddressData.city ||
+            !newAddressData.state ||
+            !newAddressData.pin
+        ) {
+            setError("All details are required.");
+        } else {
+            setError(null);
+
+            if (newAddressData.id) {
+                const data = {
+                    street: newAddressData.street,
+                    city: newAddressData.city,
+                    state: newAddressData.state,
+                    pin: newAddressData.pin,
+                    isPrimary: newAddressData.isPrimary,
+                };
+                updateAddress(newAddressData.id, data);
+            } else {
+                const data = {
+                    street: newAddressData.street,
+                    city: newAddressData.city,
+                    state: newAddressData.state,
+                    pin: newAddressData.pin,
+                };
+                addAddress(data);
+            }
+            setShowAddForm(false);
+            setNewAddressData(defaultAddress);
+            setError(null);
+        }
     };
 
-    const handlePrimaryAddress = (addressId) => {
-        const newAddresses = addresses.map((a) =>
-            a.id == addressId ? { ...a, isPrimary: !a.isPrimary } : a
-        );
-        setAddresses(newAddresses);
-    };
     return (
         <main className="d-flex justify-content-center">
             <div className="container mt-3 mb-4 bg-white p-3">
@@ -167,8 +172,8 @@ export default function Profile() {
                         </button>
                     </div>
                     <ul className="list-group mt-1">
-                        {addresses.map((a) => (
-                            <li className="list-group-item " key={a.id}>
+                        {addresses?.map((a) => (
+                            <li className="list-group-item " key={a._id}>
                                 <div className="form-check position-relative d-flex">
                                     <input
                                         className="form-check-input align-self-center"
@@ -177,15 +182,28 @@ export default function Profile() {
                                         name="selectedAddress"
                                         checked={a.isPrimary}
                                         onChange={() =>
-                                            handlePrimaryAddress(a.id)
+                                            changePrimaryAddress(a._id)
                                         }
                                     />
                                     <p className="m-0 ms-2">
                                         {a.street}, {a.city} <br />
                                         {a.state}, {a.pin}
                                     </p>
-                                    <div className="btn btn-danger btn-sm ms-auto align-self-center">
-                                        <MdOutlineDeleteOutline />
+                                    <div className=" ms-auto">
+                                        <div className="btn btn-info btn-sm align-self-center">
+                                            <BiEdit
+                                                onClick={() =>
+                                                    handelEditAddress(a)
+                                                }
+                                            />
+                                        </div>
+                                        <div className="btn btn-danger btn-sm ms-2 align-self-center">
+                                            <MdOutlineDeleteOutline
+                                                onClick={() =>
+                                                    deleteAddress(a._id)
+                                                }
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </li>
@@ -281,8 +299,11 @@ export default function Profile() {
                                         }
                                     />
                                 </div>
+                                {error && (
+                                    <p className="text-danger">*{error}</p>
+                                )}
                             </div>
-                            <div className="row mt-2">
+                            <div className="row mt-2 g-2">
                                 <div className="col-md-6 d-grid">
                                     <button
                                         className="btn btn-danger"
@@ -292,7 +313,10 @@ export default function Profile() {
                                     </button>
                                 </div>
                                 <div className="col-md-6 d-grid">
-                                    <button className="btn btn-success">
+                                    <button
+                                        className="btn btn-success"
+                                        type="submit"
+                                    >
                                         Save
                                     </button>
                                 </div>

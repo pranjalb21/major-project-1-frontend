@@ -12,7 +12,7 @@ export function ProductProvider({ children }) {
     const [selectedProduct, setSelectedProduct] = useState();
     const [wishlist, setWishlist] = useState();
     const [cart, setCart] = useState();
-    const [addresses, setAddresses] = useState(addressData);
+    const [addresses, setAddresses] = useState();
     const [loading, setLoading] = useState(false);
 
     async function initialLoad() {
@@ -20,10 +20,112 @@ export function ProductProvider({ children }) {
         fetchProduct("all");
         fetchWishlist();
         fetchCart();
+        fetchAddress();
     }
     useEffect(() => {
         initialLoad();
     }, []);
+
+    // Fetch addresses
+    const fetchAddress = async () => {
+        setLoading(true);
+        setAddresses(null);
+        await fetch(`http://localhost:5000/address/all`)
+            .then((res) => res.json())
+            .then((data) => setAddresses(data.data))
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
+    };
+
+    // Add new address
+    const addAddress = async (addressData) => {
+        setLoading(true);
+
+        const newAddresses = await fetch(`http://localhost:5000/address/add`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify(addressData),
+        })
+            .then((res) => res.json())
+            .then((data) => data.data)
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
+
+        setAddresses(newAddresses);
+    };
+
+    // Update address
+    const updateAddress = async (addressId, newAddressData) => {
+        setLoading(true);
+        const newAddresses = await fetch(
+            `http://localhost:5000/address/update/${addressId}`,
+            {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify(newAddressData),
+            }
+        )
+            .then((res) => res.json())
+            .then((data) => data.data)
+            .catch((err) => console.log(err));
+        console.log(newAddresses, "All");
+
+        if (newAddresses) {
+            setAddresses(newAddresses);
+        } else {
+            console.log("Error while adding to cart");
+        }
+        setLoading(false);
+    };
+    // Change primary address
+    const changePrimaryAddress = async (addressId) => {
+        setLoading(true);
+        const newAddresses = await fetch(
+            `http://localhost:5000/address/change/primaryAddress/${addressId}`,
+            {
+                method: "POST",
+            }
+        )
+            .then((res) => res.json())
+            .then((data) => data.data)
+            .catch((err) => console.log(err));
+
+        if (newAddresses) {
+            setAddresses(newAddresses);
+        } else {
+            console.log("Error while adding to cart");
+        }
+        setLoading(false);
+    };
+
+    // Delete address
+    const deleteAddress = async (addressId) => {
+        setLoading(true);
+        const deletedAddress = await fetch(
+            `http://localhost:5000/address/delete/${addressId}`,
+            {
+                method: "DELETE",
+            }
+        )
+            .then((res) => res.json())
+            .then((data) => data.data)
+            .catch((err) => console.log(err));
+        if (deletedAddress) {
+            const addressIndex = addresses?.findIndex(
+                (address) => address._id === deletedAddress._id
+            );
+            const newAddresses = [...addresses];
+            newAddresses.splice(addressIndex, 1);
+            setAddresses(newAddresses);
+        } else {
+            console.log("Error while adding to cart");
+        }
+        setLoading(false);
+    };
 
     // Add and remove from cart
     const toggleCart = async (productId) => {
@@ -200,18 +302,6 @@ export function ProductProvider({ children }) {
         return isExists?.length > 0;
     };
 
-    // Add new address
-    const addAddress = (newAddress) => {
-        const data = [...addresses, newAddress];
-        setAddresses(data);
-    };
-
-    // Delete address
-    const deleteAddress = (addressId) => {
-        const newAddresses = addresses.filter((a) => a.id != addressId);
-        setAddresses(newAddresses);
-    };
-
     // Productlist changes based on category
     const fetchProduct = async (type) => {
         setLoading(true);
@@ -257,14 +347,6 @@ export function ProductProvider({ children }) {
             .finally(() => setLoading(false));
     };
 
-    // Toggle primary address selection
-    const handlePrimaryAddress = (addressId) => {
-        const newAddresses = addresses.map((a) =>
-            a.id == addressId ? { ...a, isPrimary: !a.isPrimary } : a
-        );
-        setAddresses(newAddresses);
-    };
-
     return (
         <ProductContext.Provider
             value={{
@@ -273,6 +355,11 @@ export function ProductProvider({ children }) {
                 selectedProduct,
                 wishlist,
                 cart,
+                addresses,
+                addAddress,
+                updateAddress,
+                deleteAddress,
+                changePrimaryAddress,
                 toggleCart,
                 toggleWishList,
                 addItemToCart,
