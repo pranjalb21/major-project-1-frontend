@@ -3,10 +3,18 @@ import { Link } from "react-router-dom";
 import useProduct from "../contexts/ProductContext";
 import CountModifier from "../components/CountModifier";
 export default function Cart() {
-    const { cart, fetchCart } = useProduct();
+    const {
+        cart,
+        fetchCart,
+        changePrimaryAddress,
+        addresses,
+        fetchAddress,
+        fetchWishlist,
+    } = useProduct();
 
     useEffect(() => {
         fetchCart();
+        fetchAddress();
     }, []);
 
     // Calculate discounted price of every product
@@ -56,8 +64,8 @@ export default function Cart() {
     };
     return (
         <main className="py-3">
-            <div className="container bg-white py-4">
-                {cart && cart.length > 0 ? (
+            <div className="container bg-white py-4 shadow">
+                {cart?.length > 0 ? (
                     <>
                         <table className="table">
                             <thead>
@@ -73,7 +81,7 @@ export default function Cart() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {cart.map((p, i) => (
+                                {cart?.map((p, i) => (
                                     <tr key={p.productId._id}>
                                         <th scope="row">{i + 1}</th>
                                         <td>
@@ -132,6 +140,35 @@ export default function Cart() {
                                     </button>
                                 </Link>
                             </div>
+                        </div>
+                        <div className="mt-3">
+                            <p className="m-0">Select Delivery Address:</p>
+                            <ul className="list-group mt-1">
+                                {addresses?.map((a) => (
+                                    <li
+                                        className="list-group-item "
+                                        key={a._id}
+                                    >
+                                        <div className="form-check position-relative d-flex">
+                                            <input
+                                                className="form-check-input align-self-center"
+                                                type="radio"
+                                                id="flexCheckIndeterminate"
+                                                style={{ cursor: "pointer" }}
+                                                name="selectedAddress"
+                                                checked={a.isPrimary}
+                                                onChange={() =>
+                                                    changePrimaryAddress(a._id)
+                                                }
+                                            />
+                                            <p className="m-0 ms-2">
+                                                {a.street}, {a.city} <br />
+                                                {a.state}, {a.pin}
+                                            </p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </>
                 ) : (

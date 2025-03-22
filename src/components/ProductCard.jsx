@@ -5,11 +5,7 @@ import useProduct from "../contexts/ProductContext";
 import { Link } from "react-router-dom";
 
 export default function ProductCard({ product }) {
-    const {
-        toggleWishList,
-        isExistInWishlist,
-        addItemToCart,
-    } = useProduct();
+    const { toggleWishList, isExistInWishlist, addItemToCart } = useProduct();
     return (
         <div className="col-6 col-md-4 col-lg-3">
             <div className="card shadow shadow-sm position-relative">
@@ -34,18 +30,18 @@ export default function ProductCard({ product }) {
                 />
                 <div className="card-body">
                     <Link
-                        to={`/product/${product._id}`}
+                        to={`/product/${product?._id}`}
                         className=" text-decoration-none"
                     >
                         <h6 className=" text-decoration-none text-black">
-                            {product.title}
+                            {product?.title}
                         </h6>
                     </Link>
-                    <p className="card-text">${product.price}</p>
+                    <p className="card-text">${product?.price}</p>
 
                     <button
                         className="btn btn-primary btn-sm"
-                        onClick={() => product && addItemToCart(product._id)}
+                        onClick={() => addItemToCart(product?._id)}
                     >
                         {product && "Add to Cart"}
                     </button>

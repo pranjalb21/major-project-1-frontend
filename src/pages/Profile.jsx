@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { CiSquarePlus } from "react-icons/ci";
 import useProduct from "../contexts/ProductContext";
@@ -16,7 +16,7 @@ export default function Profile() {
         addAddress,
         updateAddress,
         deleteAddress,
-        changePrimaryAddress,
+        fetchAddress,
     } = useProduct();
     const [showAddForm, setShowAddForm] = useState(false);
     const [newAddressData, setNewAddressData] = useState({
@@ -28,11 +28,9 @@ export default function Profile() {
     const [error, setError] = useState();
 
     const handleShowAddForm = () => {
-        if (!showAddForm) {
-            setShowAddForm(true);
-            setNewAddressData(defaultAddress);
-            setError(null);
-        }
+        setShowAddForm(true);
+        setNewAddressData(defaultAddress);
+        setError(null);
     };
 
     const handelEditAddress = (addressData) => {
@@ -91,10 +89,12 @@ export default function Profile() {
             setError(null);
         }
     };
-
+    useEffect(() => {
+        fetchAddress();
+    }, []);
     return (
         <main className="d-flex justify-content-center">
-            <div className="container mt-3 mb-4 bg-white p-3">
+            <div className="container mt-3 mb-4 bg-white p-3 shadow">
                 <section>
                     <form className="">
                         <h4 className="fs-5">Profile Details</h4>
@@ -158,12 +158,7 @@ export default function Profile() {
                 <hr />
                 <section>
                     <div className="d-flex justify-content-between">
-                        <h4 className="fs-5">
-                            Saved Addresses{" "}
-                            <small className="fw-normal">
-                                (<i>select your primary address</i>)
-                            </small>
-                        </h4>
+                        <h4 className="fs-5">Saved Addresses</h4>
                         <button
                             className="btn btn-success btn-sm align-self-start"
                             onClick={handleShowAddForm}
@@ -174,22 +169,12 @@ export default function Profile() {
                     <ul className="list-group mt-1">
                         {addresses?.map((a) => (
                             <li className="list-group-item " key={a._id}>
-                                <div className="form-check position-relative d-flex">
-                                    <input
-                                        className="form-check-input align-self-center"
-                                        type="radio"
-                                        id="flexCheckIndeterminate"
-                                        name="selectedAddress"
-                                        checked={a.isPrimary}
-                                        onChange={() =>
-                                            changePrimaryAddress(a._id)
-                                        }
-                                    />
-                                    <p className="m-0 ms-2">
+                                <div className="position-relative d-flex">
+                                    <p className="m-0">
                                         {a.street}, {a.city} <br />
                                         {a.state}, {a.pin}
                                     </p>
-                                    <div className=" ms-auto">
+                                    <div className="ms-auto align-self-center">
                                         <div className="btn btn-info btn-sm align-self-center">
                                             <BiEdit
                                                 onClick={() =>
@@ -214,7 +199,10 @@ export default function Profile() {
                     <section>
                         <form className="mt-3" onSubmit={handleSaveAddress}>
                             <hr />
-                            <h5>Add new address</h5>
+                            <h5>
+                                {newAddressData.id ? "Update " : "Add new "}
+                                address
+                            </h5>
                             <div className="row mt-2">
                                 <div className="col-md-6">
                                     <label

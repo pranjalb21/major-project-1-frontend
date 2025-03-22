@@ -5,22 +5,22 @@ import CountPill from "./CountPill";
 import useProduct from "../contexts/ProductContext";
 
 export default function Navbar() {
-    const { wishlist, cart } = useProduct();
+    const { wishlist, cart, fetchCart, fetchWishlist } = useProduct();
     const [wishlistCount, setWishlistCount] = useState();
     const [cartCount, setCartCount] = useState();
 
     useEffect(() => {
-        if (wishlist) {
-            setWishlistCount(wishlist.length);
-        }
-        if (cart) {
-            const cartItems = cart.reduce(
-                (acc, curr) => acc + curr.productCount,
-                0
-            );
-            setCartCount(cartItems);
-        }
+        setWishlistCount(wishlist?.length);
+        const cartItems = cart?.reduce(
+            (acc, curr) => acc + curr.productCount,
+            0
+        );
+        setCartCount(cartItems);
     }, [wishlist, cart]);
+    useEffect(() => {
+        fetchCart();
+        fetchWishlist();
+    }, []);
     return (
         <>
             <nav className="navbar navbar-expand-md navbar-light">
@@ -49,6 +49,14 @@ export default function Navbar() {
                                     to="/profile"
                                 >
                                     Profile
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink
+                                    className="nav-link ms-2"
+                                    to="/order"
+                                >
+                                    Order
                                 </NavLink>
                             </li>
                             <li className="nav-item ms-2">

@@ -12,6 +12,7 @@ import ProductDetails from "./pages/ProductDetails";
 import useProduct, { ProductProvider } from "./contexts/ProductContext";
 import Products from "./pages/Products";
 import Spinner from "./components/Spinner";
+import Order from "./pages/Order";
 
 function App() {
     const { loading } = useProduct();
@@ -25,9 +26,13 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/cart" element={<Cart />} />
+                    <Route path="/order" element={<Order />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/product/:id" element={<ProductDetails />} />
-                    <Route path="/products/filter/:filter" element={<Products />} />
+                    <Route
+                        path="/products/filter/:filter"
+                        element={<Products />}
+                    />
                 </Routes>
                 <Footer />
             </BrowserRouter>

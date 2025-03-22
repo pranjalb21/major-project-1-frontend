@@ -13,10 +13,9 @@ export default function Products() {
     return (
         <main className="container my-3">
             <div className="row g-3">
-                {productList &&
-                    productList.map((p) => (
-                        <ProductCard product={p} key={p._id} />
-                    ))}
+                {productList?.map((p) => (
+                    <ProductCard product={p} key={p._id} />
+                ))}
             </div>
         </main>
     );

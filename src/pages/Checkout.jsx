@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import useProduct from "../contexts/ProductContext";
 import { Link, useNavigate } from "react-router-dom";
+import SuccessfullOrder from "../components/SuccessfullOrder";
 
 export default function Checkout() {
-    const { addresses } = useProduct();
+    const { addresses, placeOrder, cart } = useProduct();
+    const [orderPlacedLoader, setOrderPlacedLoader] = useState(false);
     const [shippingAddress, setShippingAddress] = useState();
     useEffect(() => {
         const selectedAddress = addresses?.filter(
@@ -13,17 +15,7 @@ export default function Checkout() {
             setShippingAddress(selectedAddress[0]);
         }
     }, [addresses]);
-    const { cart, fetchCart } = useProduct();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        fetchCart();
-    }, []);
-    useEffect(() => {
-        if (!cart?.length > 0) {
-            navigate("/cart");
-        }
-    }, [cart]);
 
     // Calculate discounted price of every product
     const calculateDiscountPrice = (product) => {
@@ -70,111 +62,115 @@ export default function Checkout() {
             0
         );
     };
+
+    const handlePlaceOrder = () => {
+        const totalOrderPrice = calculateTotalDiscountedPrice(cart);
+        const cartData = cart.map((item) => ({
+            productId: item.productId._id,
+            productCount: item.productCount,
+            cost: calculateDiscountPrice(item),
+        }));
+        const orderData = { items: cartData, totalOrderPrice, shippingAddress };
+        placeOrder(orderData);
+        setOrderPlacedLoader(true);
+        setTimeout(() => {
+            setOrderPlacedLoader(false);
+            navigate("/");
+        }, 3000);
+    };
     return (
         <main className="py-3">
-            <div className="container bg-white py-4">
-                <h2 className="fs-4">Checkout</h2>
+            {!orderPlacedLoader ? (
                 <section>
-                    <p>
-                        Ship to: <br />
-                        {shippingAddress?.street},&nbsp;{shippingAddress?.city}
-                        ,&nbsp; {shippingAddress?.state},&nbsp;
-                        {shippingAddress?.pin}
-                        <br />
-                        <small>
-                            {" "}
-                            <Link
-                                className="text-decoration-none"
-                                to={"/profile"}
-                            >
-                                Change
-                            </Link>
-                        </small>
-                    </p>
-                    {cart && cart.length > 0 ? (
-                        <>
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Sl No.</th>
-                                        <th scope="col">Product Name</th>
-                                        <th scope="col" className="text-center">
-                                            Quantity
-                                        </th>
-                                        <th scope="col">MRP</th>
-                                        <th scope="col">Discount(%)</th>
-                                        <th scope="col">Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {cart.map((p, i) => (
-                                        <tr key={p.productId._id}>
-                                            <th scope="row">{i + 1}</th>
-                                            <td>
-                                                <Link
-                                                    className="text-decoration-none"
-                                                    to={`/product/${p.productId._id}`}
-                                                >
-                                                    {p.productId.title}
-                                                </Link>
-                                            </td>
-                                            <td></td>
-                                            <td>${p.productId.price}</td>
-                                            <td>
-                                                {p.productId.discountPercentage}
-                                            </td>
-                                            <td>
-                                                <s>
-                                                    $
-                                                    {p.productId.price *
-                                                        p.productCount}
-                                                </s>
-                                                <br /> $
-                                                {calculateDiscountPrice(p)}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    <tr>
-                                        <th scope="row"></th>
-                                        <td className="fw-medium">Total:</td>
-                                        <td className="fw-medium text-center">
-                                            {calculateTotalQuantity(cart)}
+                    <div className="container bg-white py-4 shadow">
+                        <h2 className="fs-4">Checkout</h2>
+                        <p>
+                            Ship to: <br />
+                            {shippingAddress?.street},&nbsp;
+                            {shippingAddress?.city}
+                            ,&nbsp; {shippingAddress?.state},&nbsp;
+                            {shippingAddress?.pin}
+                        </p>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sl No.</th>
+                                    <th scope="col">Product Name</th>
+                                    <th scope="col" className="text-center">
+                                        Quantity
+                                    </th>
+                                    <th scope="col">MRP</th>
+                                    <th scope="col">Discount(%)</th>
+                                    <th scope="col">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {cart?.map((p, i) => (
+                                    <tr key={p.productId._id}>
+                                        <th scope="row">{i + 1}</th>
+                                        <td>
+                                            <Link
+                                                className="text-decoration-none"
+                                                to={`/product/${p.productId._id}`}
+                                            >
+                                                {p.productId.title}
+                                            </Link>
+                                        </td>
+                                        <td className="text-center">
+                                            {p.productCount}
+                                        </td>
+                                        <td>${p.productId.price}</td>
+                                        <td>
+                                            {p.productId.discountPercentage}
                                         </td>
                                         <td>
-                                            <s>${calculateTotalPrice(cart)}</s>
-                                        </td>
-                                        <td></td>
-                                        <td className="fw-medium">
-                                            $
-                                            {calculateTotalDiscountedPrice(
-                                                cart
-                                            )}
+                                            <s>
+                                                $
+                                                {p.productId.price *
+                                                    p.productCount}
+                                            </s>
+                                            <br /> ${calculateDiscountPrice(p)}
                                         </td>
                                     </tr>
-                                </tbody>
-                            </table>
-                            <div className="row g-3">
-                                <div className="col-md-6">
-                                    <Link to={"/cart"}>
-                                        <button className="btn btn-info btn-sm col-12">
-                                            Edit Order
-                                        </button>
-                                    </Link>
-                                </div>
-                                <div className="col-md-6">
-                                    <Link to={"/checkout"}>
-                                        <button className="btn btn-warning btn-sm col-12">
-                                            Place Order
-                                        </button>
-                                    </Link>
-                                </div>
+                                ))}
+                                <tr>
+                                    <th scope="row"></th>
+                                    <td className="fw-medium">Total:</td>
+                                    <td className="fw-medium text-center">
+                                        {calculateTotalQuantity(cart)}
+                                    </td>
+                                    <td>
+                                        <s>${calculateTotalPrice(cart)}</s>
+                                    </td>
+                                    <td></td>
+                                    <td className="fw-medium">
+                                        ${calculateTotalDiscountedPrice(cart)}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div className="row g-3">
+                            <div className="col-md-6">
+                                <Link to={"/cart"}>
+                                    <button className="btn btn-info btn-sm col-12">
+                                        Edit Order
+                                    </button>
+                                </Link>
                             </div>
-                        </>
-                    ) : (
-                        <p>No items in cart</p>
-                    )}
+                            <div className="col-md-6">
+                                <button
+                                    className="btn btn-warning btn-sm col-12"
+                                    onClick={handlePlaceOrder}
+                                >
+                                    Place Order
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </section>
-            </div>
+            ) : (
+                <SuccessfullOrder />
+            )}
         </main>
     );
 }

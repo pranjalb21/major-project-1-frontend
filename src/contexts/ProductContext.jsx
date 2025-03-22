@@ -10,21 +10,62 @@ export default useProduct;
 export function ProductProvider({ children }) {
     const [productList, setProductList] = useState();
     const [selectedProduct, setSelectedProduct] = useState();
+    const [selectedOrder, setSelectedOrder] = useState();
     const [wishlist, setWishlist] = useState();
     const [cart, setCart] = useState();
+    const [order, setOrder] = useState();
     const [addresses, setAddresses] = useState();
     const [loading, setLoading] = useState(false);
 
     async function initialLoad() {
-        setLoading(true);
-        fetchProduct("all");
         fetchWishlist();
         fetchCart();
-        fetchAddress();
     }
+
     useEffect(() => {
         initialLoad();
     }, []);
+
+    // Get all orders
+    const fetchOrders = async () => {
+        setLoading(true);
+        await fetch(`http://localhost:5000/order/all`)
+            .then((res) => res.json())
+            .then((data) => setOrder(data.data))
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
+    };
+
+    // Get order with ID
+    const getOrderWithId = async (orderId) => {
+        setLoading(true);
+        await fetch(`http://localhost:5000/order/${orderId}`)
+            .then((res) => res.json())
+            .then((data) => setSelectedOrder(data.data))
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
+    };
+
+    // Place order
+    const placeOrder = async (orderDetails) => {
+        setLoading(true);
+        const postedOrder = await fetch(`http://localhost:5000/order/add`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify(orderDetails),
+        })
+            .then((res) => res.json())
+            .then((data) => data.data)
+            .catch((err) => console.log(err));
+        if (postedOrder) {
+            await fetch(`http://localhost:5000/cart/all`, { method: "DELETE" });
+        }
+        setLoading(false);
+        await fetchCart();
+        await fetchWishlist();
+    };
 
     // Fetch addresses
     const fetchAddress = async () => {
@@ -356,6 +397,12 @@ export function ProductProvider({ children }) {
                 wishlist,
                 cart,
                 addresses,
+                order,
+                selectedOrder,
+                initialLoad,
+                getOrderWithId,
+                fetchOrders,
+                placeOrder,
                 addAddress,
                 updateAddress,
                 deleteAddress,
@@ -368,6 +415,7 @@ export function ProductProvider({ children }) {
                 getProductById,
                 fetchWishlist,
                 fetchCart,
+                fetchAddress,
                 isExistInWishlist,
                 isExistInCart,
                 deleteItemFromCart,

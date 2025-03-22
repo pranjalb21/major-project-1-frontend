@@ -11,8 +11,8 @@ export default function Wishlist() {
         <main className="">
             <div className="container p-3">
                 <div className="row g-3">
-                    {wishlist && wishlist.length > 0 ? (
-                        wishlist.map((p) => (
+                    {wishlist?.length > 0 ? (
+                        wishlist?.map((p) => (
                                 <ProductCard product={p.productId} key={p._id} />
                             ))
                     ) : (

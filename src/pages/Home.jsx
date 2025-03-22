@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import useProduct from "../contexts/ProductContext";
 
 const categories = [
     {
@@ -24,11 +25,15 @@ const categories = [
     },
 ];
 export default function Home() {
+    const { fetchCart, fetchWishlist, initialLoad } = useProduct();
+    useEffect(() => {
+        initialLoad();
+    }, []);
     return (
         <main className="container mt-3">
             <section>
                 <div className="row">
-                    {categories.map((c) => (
+                    {categories?.map((c) => (
                         <div className="col-3 g-3" key={c.id}>
                             <Link to={`/products/filter/${c.name}`}>
                                 <div className="card position-relative overflow-hidden">
