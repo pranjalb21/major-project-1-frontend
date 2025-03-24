@@ -20,6 +20,7 @@ export function ProductProvider({ children }) {
     async function initialLoad() {
         fetchWishlist();
         fetchCart();
+        fetchAddress()
     }
 
     useEffect(() => {

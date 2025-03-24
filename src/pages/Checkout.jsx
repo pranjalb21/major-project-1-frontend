@@ -70,27 +70,36 @@ export default function Checkout() {
             productCount: item.productCount,
             cost: calculateDiscountPrice(item),
         }));
-        const orderData = { items: cartData, totalOrderPrice, shippingAddress };
+        const address = `${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.pin}`;
+        const orderData = {
+            items: cartData,
+            totalOrderPrice,
+            shippingAddress: address,
+        };
         placeOrder(orderData);
         setOrderPlacedLoader(true);
         setTimeout(() => {
             setOrderPlacedLoader(false);
             navigate("/");
-        }, 3000);
+        }, 5000);
     };
     return (
         <main className="py-3">
             {!orderPlacedLoader ? (
                 <section>
                     <div className="container bg-white py-4 shadow">
-                        <h2 className="fs-4">Checkout</h2>
+                        <h2 className="fs-3">Checkout</h2>
+                        <hr />
                         <p>
-                            Ship to: <br />
+                            <span className="fw-medium">Ship to:</span>
+                            <br />
                             {shippingAddress?.street},&nbsp;
                             {shippingAddress?.city}
                             ,&nbsp; {shippingAddress?.state},&nbsp;
                             {shippingAddress?.pin}
                         </p>
+                        <hr />
+
                         <table className="table">
                             <thead>
                                 <tr>

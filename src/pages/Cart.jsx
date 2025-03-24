@@ -12,10 +12,10 @@ export default function Cart() {
         fetchWishlist,
     } = useProduct();
 
-    useEffect(() => {
-        fetchCart();
-        fetchAddress();
-    }, []);
+    // useEffect(() => {
+    //     fetchCart();
+    //     fetchAddress();
+    // }, []);
 
     // Calculate discounted price of every product
     const calculateDiscountPrice = (product) => {
@@ -63,10 +63,11 @@ export default function Cart() {
         );
     };
     return (
-        <main className="py-3">
-            <div className="container bg-white py-4 shadow">
+        <main className="py-3 container">
+            <div className="bg-white py-4 px-3 shadow">
                 {cart?.length > 0 ? (
                     <>
+                        <h2 className="fs-3">Cart</h2>
                         <table className="table">
                             <thead>
                                 <tr>
@@ -141,6 +142,7 @@ export default function Cart() {
                                 </Link>
                             </div>
                         </div>
+                        <hr />
                         <div className="mt-3">
                             <p className="m-0">Select Delivery Address:</p>
                             <ul className="list-group mt-1">
