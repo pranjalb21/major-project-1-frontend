@@ -10,10 +10,10 @@ import Footer from "./components/Footer";
 import Checkout from "./pages/Checkout";
 import ProductDetails from "./pages/ProductDetails";
 import useProduct, { ProductProvider } from "./contexts/ProductContext";
-import Products from "./pages/Products";
 import Spinner from "./components/Spinner";
 import Order from "./pages/Order";
 import OrderDetails from "./pages/OrderDetails";
+import ProductsPage from "./pages/ProductsPage";
 
 function App() {
     const { loading } = useProduct();
@@ -33,7 +33,7 @@ function App() {
                     <Route path="/product/:id" element={<ProductDetails />} />
                     <Route
                         path="/products/filter/:filter"
-                        element={<Products />}
+                        element={<ProductsPage />}
                     />
                 </Routes>
                 <Footer />
