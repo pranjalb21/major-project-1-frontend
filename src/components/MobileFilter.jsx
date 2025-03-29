@@ -5,76 +5,58 @@ export default function MobileFilter() {
     const [rating, setRating] = useState("");
     const [priceRange, setPriceRange] = useState(0);
     return (
-        <div className="container">
-            <div className="row g-3 mb-2 d-md-none">
-                <div className="col-sm-6">
-                    <div className="row">
-                        <div className="col-sm-6">
-                            <label htmlFor="sort" className="form-label">
-                                Sort By Price:
-                            </label>
-                            <select
-                                name="sort"
-                                id="sort"
-                                className="form-select-sm"
-                                value={price}
-                                onChange={(e) => setPrice(e.target.value)}
-                            >
-                                <option value="">Select</option>
-                                <option value="l2h">Low to High</option>
-                                <option value="h2l">High to Low</option>
-                            </select>
-                        </div>
-                        <div className="col-6">
-                            <label htmlFor="rating" className="form-label">
-                                Sort By Rating:
-                            </label>
-                            <select
-                                name="rating"
-                                id="rating"
-                                className="form-select-sm"
-                                value={rating}
-                                onChange={(e) => setRating(e.target.value)}
-                            >
-                                <option value="">Select</option>
-                                <option value="4&U">4 Stars & above</option>
-                                <option value="3&U">3 Stars & above</option>
-                                <option value="2&U">2 Stars & above</option>
-                                <option value="1&U">1 Star & above</option>
-                            </select>
-                        </div>
+        <div className="container mt-2">
+            <div className="row mb-2 d-md-none justify-content-center">
+                <div className="row">
+                    <div className="col-4">
+                        <select
+                            name="sort"
+                            id="sort"
+                            className="form-select-sm w-100"
+                            value={price}
+                            onChange={(e) => setPrice(e.target.value)}
+                        >
+                            <option value="">Price</option>
+                            <option value="l2h">Low to High</option>
+                            <option value="h2l">High to Low</option>
+                        </select>
                     </div>
-                </div>
-                <div className="col-sm-6">
-                    <div className="px-3">
-                        <label for="customRange3" className="form-label">
-                            Select Price Range:
-                        </label>
-                        <div className="row">
-                            <div className="col align-self-center">
-                                <input
-                                    type="range"
-                                    className="form-range-sm"
-                                    min="0"
-                                    max="2500"
-                                    step="1"
-                                    id="customRange3"
-                                    value={priceRange}
-                                    onChange={(e) =>
-                                        setPriceRange(e.target.value)
-                                    }
-                                />
-                                <input
-                                    type="number"
-                                    style={{ width: "4rem" }}
-                                    value={priceRange}
-                                    onChange={(e) =>
-                                        setPriceRange(e.target.value)
-                                    }
-                                    className="form-control-sm border-1 align-self-center ms-2"
-                                />
-                            </div>
-                        </div>
+                    <div className="col-4">
+                        <select
+                            name="rating"
+                            id="rating"
+                            className="form-select-sm w-100"
+                            value={rating}
+                            onChange={(e) => setRating(e.target.value)}
+                        >
+                            <option value="">Rating</option>
+                            <option value="4&U">4 Stars & above</option>
+                            <option value="3&U">3 Stars & above</option>
+                            <option value="2&U">2 Stars & above</option>
+                            <option value="1&U">1 Star & above</option>
+                        </select>
+                    </div>
+                    <div className="col-4">
+                        <select
+                            name="rating"
+                            id="rating"
+                            className="form-select-sm w-100"
+                            value={rating}
+                            onChange={(e) => setRating(e.target.value)}
+                        >
+                            <option value="">Price Range</option>
+                            <option value="1to500">From 1 to 500</option>
+                            <option value="501to1000">From 501 to 1000</option>
+                            <option value="1001to1500">
+                                From 1001 to 1500
+                            </option>
+                            <option value="1501to2000">
+                                From 1501 to 2000
+                            </option>
+                            <option value="2001to2500">
+                                From 2001 to 2500
+                            </option>
+                        </select>
                     </div>
                 </div>
             </div>

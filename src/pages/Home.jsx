@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import useProduct from "../contexts/ProductContext";
 
-const categories = [
+export const categories = [
     {
         id: 1,
         name: "beauty",

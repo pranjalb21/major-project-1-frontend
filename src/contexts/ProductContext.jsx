@@ -16,16 +16,35 @@ export function ProductProvider({ children }) {
     const [order, setOrder] = useState();
     const [addresses, setAddresses] = useState();
     const [loading, setLoading] = useState(false);
+    const [price, setPrice] = useState("");
+    const [rating, setRating] = useState("");
+    const [priceRange, setPriceRange] = useState(2500);
+    const [category, setCategory] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
 
     async function initialLoad() {
         fetchWishlist();
         fetchCart();
-        fetchAddress()
+        fetchAddress();
     }
 
     useEffect(() => {
         initialLoad();
     }, []);
+
+    useEffect(() => {
+        console.log(price);
+        console.log(rating);
+        console.log(priceRange);
+        console.log(category);
+    }, [price, rating, priceRange, category]);
+
+    const resetFilter = () => {
+        setPrice("");
+        setRating("");
+        setPriceRange(2500);
+        setCategory([]);
+    };
 
     // Get all orders
     const fetchOrders = async () => {
@@ -349,7 +368,9 @@ export function ProductProvider({ children }) {
         setLoading(true);
         setSelectedProduct(null);
         setProductList(null);
-        await fetch(`http://localhost:5000/products/category/${type}`)
+        await fetch(
+            `http://localhost:5000/products/category/${type}?page=${currentPage}`
+        )
             .then((res) => res.json())
             .then((data) => setProductList(data.data))
             .catch((err) => console.log(err))
@@ -400,6 +421,15 @@ export function ProductProvider({ children }) {
                 addresses,
                 order,
                 selectedOrder,
+                price,
+                rating,
+                priceRange,
+                category,
+                resetFilter,
+                setPrice,
+                setRating,
+                setPriceRange,
+                setCategory,
                 initialLoad,
                 getOrderWithId,
                 fetchOrders,
@@ -421,6 +451,8 @@ export function ProductProvider({ children }) {
                 isExistInCart,
                 deleteItemFromCart,
                 addItemWithQuantityToCart,
+                currentPage,
+                setCurrentPage,
             }}
         >
             {children}
