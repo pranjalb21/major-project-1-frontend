@@ -1,18 +1,23 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { categories } from "../pages/Home";
 import useProduct from "../contexts/ProductContext";
 
 export default function DesktopFilter() {
+    const [queryParams, setQueryParams] = useSearchParams();
     const {
-        price,
         rating,
-        priceRange,
-        category,
-        setPrice,
         setRating,
-        setPriceRange,
+        range,
+        setRange,
+        category,
         setCategory,
+        searchKeyword,
+        setSearchKeyword,
+        page,
+        setPage,
+        sort,
+        setSort,
         resetFilter,
     } = useProduct();
     const handleCategoryChange = (e) => {
@@ -24,6 +29,53 @@ export default function DesktopFilter() {
             setCategory(newCategory);
         }
     };
+
+    const setURL = () => {
+        const params = new URLSearchParams();
+        if (rating) {
+            params.append("rating", rating);
+        } else {
+            params.delete("rating");
+        }
+        if (range) {
+            params.append("range", range);
+        } else {
+            params.delete("range");
+        }
+        if (searchKeyword) {
+            params.append("searchKeyword", searchKeyword);
+        } else {
+            params.delete("searchKeyword");
+        }
+        if (page) {
+            params.append("page", page);
+        } else {
+            params.delete("page");
+        }
+        if (sort) {
+            params.append("sort", sort);
+        } else {
+            params.delete("sort");
+        }
+        if (category.length > 0) {
+            category.forEach((cat) => {
+                params.append("category", cat);
+            });
+        } else {
+            params.delete("category");
+        }
+        setQueryParams(params);
+    };
+    useEffect(() => {
+        setRating(rating);
+        setRange(page);
+        const newCategory = [category];
+        setCategory(newCategory);
+        setSearchKeyword(searchKeyword);
+        setPage(page);
+        setSort(sort);
+        setURL();
+    }, [category, page, rating, sort, range, searchKeyword]);
     return (
         <div className="w-100 h-100 bg-white p-2">
             <div>
@@ -48,8 +100,8 @@ export default function DesktopFilter() {
                         min={0}
                         max={2500}
                         step={1}
-                        value={priceRange}
-                        onChange={(e) => setPriceRange(e.target.value)}
+                        value={range}
+                        onChange={(e) => setRange(e.target.value)}
                         className="w-100"
                     />
                 </div>
@@ -58,8 +110,8 @@ export default function DesktopFilter() {
                         type="number"
                         name="priceRange"
                         id="priceRange"
-                        value={priceRange}
-                        onChange={(e) => setPriceRange(e.target.value)}
+                        value={range}
+                        onChange={(e) => setRange(e.target.value)}
                         className="form-control-sm border-1 w-50 ms-1"
                     />
                 </div>
@@ -76,8 +128,8 @@ export default function DesktopFilter() {
                             type="checkbox"
                             id={category.name}
                             name="category"
-                            onChange={(e)=>{
-                                handleCategoryChange(e)
+                            onChange={(e) => {
+                                handleCategoryChange(e);
                                 console.log(category);
                             }}
                             value={category.name}

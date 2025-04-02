@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import productDataList from "../assets/products.json";
 import addressData from "../assets/address.json";
+import { useSearchParams } from "react-router-dom";
 
 const ProductContext = createContext();
 
@@ -8,42 +9,103 @@ const useProduct = () => useContext(ProductContext);
 export default useProduct;
 
 export function ProductProvider({ children }) {
+    const ITEMSPERPAGE = 4;
+    // URL state
+    const [searchParams] = useSearchParams();
+    // Product related states
     const [productList, setProductList] = useState();
+    const [totalPages, setTotalPages] = useState(1);
     const [selectedProduct, setSelectedProduct] = useState();
-    const [selectedOrder, setSelectedOrder] = useState();
+
+    // Wishlist related states
     const [wishlist, setWishlist] = useState();
+    const [wishlistTotalCount, setWishlistTotalCount] = useState(0);
+    const [wishlistTotalPage, setWishlistTotalPage] = useState(1);
+
+    // Cart related states
     const [cart, setCart] = useState();
+    const [cartTotalCount, setCartTotalCount] = useState(0);
+
+    // Order related states
+    const [selectedOrder, setSelectedOrder] = useState();
     const [order, setOrder] = useState();
     const [addresses, setAddresses] = useState();
+
+    // Loading related states
     const [loading, setLoading] = useState(false);
-    const [price, setPrice] = useState("");
-    const [rating, setRating] = useState("");
-    const [priceRange, setPriceRange] = useState(2500);
+    const [actionLoader, setActionLoader] = useState(false);
+
+    // Product filter related states
+    const [rating, setRating] = useState();
+    const [range, setRange] = useState();
     const [category, setCategory] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [searchKeyword, setSearchKeyword] = useState();
+    const [page, setPage] = useState(1);
+    const [sort, setSort] = useState();
 
     async function initialLoad() {
         fetchWishlist();
         fetchCart();
-        fetchAddress();
     }
 
     useEffect(() => {
         initialLoad();
     }, []);
 
-    useEffect(() => {
-        console.log(price);
-        console.log(rating);
-        console.log(priceRange);
-        console.log(category);
-    }, [price, rating, priceRange, category]);
-
     const resetFilter = () => {
-        setPrice("");
-        setRating("");
-        setPriceRange(2500);
+        setRating(null);
         setCategory([]);
+        setRange(null);
+        setPage(1);
+        setSort(null);
+    };
+
+    // Productlist changes based on category
+    const fetchProduct = async () => {
+        setLoading(true);
+        setSelectedProduct(null);
+        setProductList(null);
+        let url = `http://localhost:5000/products?`;
+
+        if (category) {
+            url += `${category?.map((cat) => `category=${cat}`).join("&")}`;
+        }
+        if (page) {
+            url += `page=${page}`;
+        }
+        if (rating) {
+            url += `rating=${rating}`;
+        }
+        if (sort) {
+            url += `sort=${sort}`;
+        }
+        if (range) {
+            url += `range=${range}`;
+        }
+        if (searchKeyword) {
+            url += `searchKeyword=${searchKeyword}`;
+        }
+        console.log(url);
+
+        await fetch(url)
+            .then((res) => res.json())
+            .then((data) => {
+                setProductList(data.data);
+                setTotalPages(Math.ceil(data.totalCount / ITEMSPERPAGE));
+            })
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
+    };
+
+    // Get product by product ID
+    const getProductById = async (productId) => {
+        setLoading(true);
+        setSelectedProduct(null);
+        await fetch(`http://localhost:5000/products/id/${productId}`)
+            .then((res) => res.json())
+            .then((data) => setSelectedProduct(data.data))
+            .catch((err) => console.log(err))
+            .finally(() => setLoading(false));
     };
 
     // Get all orders
@@ -142,6 +204,7 @@ export function ProductProvider({ children }) {
         }
         setLoading(false);
     };
+
     // Change primary address
     const changePrimaryAddress = async (addressId) => {
         setLoading(true);
@@ -363,49 +426,33 @@ export function ProductProvider({ children }) {
         return isExists?.length > 0;
     };
 
-    // Productlist changes based on category
-    const fetchProduct = async (type) => {
-        setLoading(true);
-        setSelectedProduct(null);
-        setProductList(null);
-        await fetch(
-            `http://localhost:5000/products/category/${type}?page=${currentPage}`
-        )
-            .then((res) => res.json())
-            .then((data) => setProductList(data.data))
-            .catch((err) => console.log(err))
-            .finally(() => setLoading(false));
-    };
-
-    // Get product by product ID
-    const getProductById = async (productId) => {
-        setLoading(true);
-        setSelectedProduct(null);
-        await fetch(`http://localhost:5000/products/id/${productId}`)
-            .then((res) => res.json())
-            .then((data) => setSelectedProduct(data.data))
-            .catch((err) => console.log(err))
-            .finally(() => setLoading(false));
-    };
-
     // Fetch wishlist
-    const fetchWishlist = async () => {
+    const fetchWishlist = async (page = 1) => {
         setLoading(true);
         setWishlist(null);
-        await fetch(`http://localhost:5000/wishlist/all`)
+        setWishlistTotalCount(0);
+        setWishlistTotalPage(1);
+        await fetch(`http://localhost:5000/wishlist/all?page=${page}`)
             .then((res) => res.json())
-            .then((data) => setWishlist(data.data))
+            .then((data) => {
+                setWishlist(data.data);
+                setWishlistTotalCount(data.totalCount);
+                setWishlistTotalPage(Math.ceil(data.totalCount / ITEMSPERPAGE));
+            })
             .catch((err) => console.log(err))
             .finally(() => setLoading(false));
     };
 
     // Fetch cart
-    const fetchCart = async () => {
+    const fetchCart = async (page = 1) => {
         setLoading(true);
-        setWishlist(null);
-        await fetch(`http://localhost:5000/cart/all`)
+        setCart(null);
+        await fetch(`http://localhost:5000/cart/all?page=${page}`)
             .then((res) => res.json())
-            .then((data) => setCart(data.data))
+            .then((data) => {
+                setCart(data.data);
+                setCartTotalCount(data.totalCount);
+            })
             .catch((err) => console.log(err))
             .finally(() => setLoading(false));
     };
@@ -421,14 +468,24 @@ export function ProductProvider({ children }) {
                 addresses,
                 order,
                 selectedOrder,
-                price,
                 rating,
-                priceRange,
+                range,
                 category,
+                totalPages,
+                wishlistTotalCount,
+                cartTotalCount,
+                page,
+                sort,
+                searchKeyword,
                 resetFilter,
-                setPrice,
                 setRating,
-                setPriceRange,
+                setRange,
+                setCategory,
+                setSearchKeyword,
+                setPage,
+                setSort,
+                setRating,
+                setRange,
                 setCategory,
                 initialLoad,
                 getOrderWithId,
@@ -451,8 +508,6 @@ export function ProductProvider({ children }) {
                 isExistInCart,
                 deleteItemFromCart,
                 addItemWithQuantityToCart,
-                currentPage,
-                setCurrentPage,
             }}
         >
             {children}

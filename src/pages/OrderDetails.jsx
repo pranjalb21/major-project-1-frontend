@@ -8,9 +8,6 @@ export default function OrderDetails() {
     useEffect(() => {
         getOrderWithId(orderId);
     }, [orderId]);
-    useEffect(() => {
-        console.log(selectedOrder);
-    }, [selectedOrder]);
     // Calculate discounted price of every product
     const calculateDiscountPrice = (product) => {
         return parseFloat(

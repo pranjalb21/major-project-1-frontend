@@ -35,7 +35,7 @@ export default function Home() {
                 <div className="row">
                     {categories?.map((c) => (
                         <div className="col-3 g-3" key={c.id}>
-                            <Link to={`/products/filter/${c.name}`}>
+                            <Link to={`/products?category=${c.name}`}>
                                 <div className="card position-relative overflow-hidden">
                                     <img
                                         src={c.image}
@@ -56,7 +56,7 @@ export default function Home() {
             </section>
             <section className="mt-3">
                 <div className="position-relative">
-                    <Link to={"/products/filter/all"}>
+                    <Link to={"/products?category=all"}>
                         <img
                             src={`https://images.unsplash.com/photo-1515706886582-54c73c5eaf41?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
                             alt="Products"

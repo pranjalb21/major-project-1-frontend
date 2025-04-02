@@ -32,7 +32,7 @@ function App() {
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/product/:id" element={<ProductDetails />} />
                     <Route
-                        path="/products/filter/:filter"
+                        path="/products"
                         element={<ProductsPage />}
                     />
                 </Routes>

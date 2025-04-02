@@ -5,18 +5,9 @@ import CountPill from "./CountPill";
 import useProduct from "../contexts/ProductContext";
 
 export default function Navbar() {
-    const { wishlist, cart, fetchCart, fetchWishlist } = useProduct();
-    const [wishlistCount, setWishlistCount] = useState();
-    const [cartCount, setCartCount] = useState();
+    const { fetchCart, fetchWishlist, wishlistTotalCount, cartTotalCount } =
+        useProduct();
 
-    useEffect(() => {
-        setWishlistCount(wishlist?.length);
-        const cartItems = cart?.reduce(
-            (acc, curr) => acc + curr.productCount,
-            0
-        );
-        setCartCount(cartItems);
-    }, [wishlist, cart]);
     useEffect(() => {
         fetchCart();
         fetchWishlist();
@@ -52,17 +43,19 @@ export default function Navbar() {
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink
-                                    className="nav-link ms-2"
-                                    to="/order"
-                                >
+                                <NavLink className="nav-link ms-2" to="/order">
                                     Order
                                 </NavLink>
                             </li>
                             <li className="nav-item ms-2">
                                 <NavLink className="nav-link" to="/wishlist">
                                     Wishlist
-                                    <CountPill count={wishlistCount} />
+                                    {wishlistTotalCount &&
+                                    wishlistTotalCount > 0 ? (
+                                        <CountPill count={wishlistTotalCount} />
+                                    ) : (
+                                        ""
+                                    )}
                                 </NavLink>
                             </li>
                             <li className="nav-item ms-2">
@@ -71,7 +64,11 @@ export default function Navbar() {
                                     to="/cart"
                                 >
                                     Cart
-                                    <CountPill count={cartCount} />
+                                    {cartTotalCount && cartTotalCount > 0 ? (
+                                        <CountPill count={cartTotalCount} />
+                                    ) : (
+                                        ""
+                                    )}
                                 </NavLink>
                             </li>
                         </ul>

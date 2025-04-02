@@ -63,8 +63,8 @@ export default function Cart() {
         );
     };
     return (
-        <main className="py-3 container">
-            <div className="bg-white py-4 px-3 shadow">
+        <main className="py-3 container h-100">
+            <div className="bg-white py-4 px-3 shadow h-100">
                 {cart?.length > 0 ? (
                     <>
                         <h2 className="fs-3">Cart</h2>

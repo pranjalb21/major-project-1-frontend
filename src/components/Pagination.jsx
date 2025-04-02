@@ -2,8 +2,11 @@ import React from "react";
 import useProduct from "../contexts/ProductContext";
 import { Link } from "react-router-dom";
 
-export default function Pagination({ totalPages }) {
-    const { currentPage, setCurrentPage } = useProduct();
+export default function Pagination({
+    totalPages,
+    currentPage,
+    setCurrentPage,
+}) {
     return (
         <nav aria-label="Page navigation example">
             <ul className="pagination justify-content-center">
