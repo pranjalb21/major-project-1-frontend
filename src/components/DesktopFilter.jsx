@@ -6,59 +6,60 @@ import useProduct from "../contexts/ProductContext";
 export default function DesktopFilter() {
     const [queryParams, setQueryParams] = useSearchParams();
     const {
-        rating,
-        setRating,
-        range,
-        setRange,
-        category,
-        setCategory,
-        searchKeyword,
-        setSearchKeyword,
-        page,
-        setPage,
-        sort,
-        setSort,
+        ratingFilter,
+        setRatingFilter,
+        rangeFilter,
+        setRangeFilter,
+        categoryFilter,
+        setCategoryFilter,
+        searchKeywordFilter,
+        setSearchKeywordFilter,
+        pageFilter,
+        setPageFilter,
+        sortFilter,
+        setSortFilter,
         resetFilter,
+        fetchProduct,
     } = useProduct();
     const handleCategoryChange = (e) => {
         const { value, checked } = e.target;
         if (checked) {
-            setCategory((prev) => [...prev, value]);
+            setCategoryFilter((prev) => [...prev, value]);
         } else {
-            const newCategory = category.filter((c) => c != value);
-            setCategory(newCategory);
+            const newCategory = categoryFilter.filter((c) => c != value);
+            setCategoryFilter(newCategory);
         }
     };
 
     const setURL = () => {
         const params = new URLSearchParams();
-        if (rating) {
-            params.append("rating", rating);
+        if (ratingFilter) {
+            params.append("rating", ratingFilter);
         } else {
             params.delete("rating");
         }
-        if (range) {
-            params.append("range", range);
+        if (rangeFilter) {
+            params.append("range", rangeFilter);
         } else {
             params.delete("range");
         }
-        if (searchKeyword) {
-            params.append("searchKeyword", searchKeyword);
+        if (searchKeywordFilter) {
+            params.append("searchKeyword", searchKeywordFilter);
         } else {
             params.delete("searchKeyword");
         }
-        if (page) {
-            params.append("page", page);
+        if (pageFilter) {
+            params.append("page", pageFilter);
         } else {
             params.delete("page");
         }
-        if (sort) {
-            params.append("sort", sort);
+        if (sortFilter) {
+            params.append("sort", sortFilter);
         } else {
             params.delete("sort");
         }
-        if (category.length > 0) {
-            category.forEach((cat) => {
+        if (categoryFilter.length > 0) {
+            categoryFilter.forEach((cat) => {
                 params.append("category", cat);
             });
         } else {
@@ -67,15 +68,15 @@ export default function DesktopFilter() {
         setQueryParams(params);
     };
     useEffect(() => {
-        setRating(rating);
-        setRange(page);
-        const newCategory = [category];
-        setCategory(newCategory);
-        setSearchKeyword(searchKeyword);
-        setPage(page);
-        setSort(sort);
-        setURL();
-    }, [category, page, rating, sort, range, searchKeyword]);
+        setURL()
+    }, [
+        categoryFilter,
+        pageFilter,
+        ratingFilter,
+        sortFilter,
+        rangeFilter,
+        searchKeywordFilter,
+    ]);
     return (
         <div className="w-100 h-100 bg-white p-2">
             <div>
@@ -100,8 +101,8 @@ export default function DesktopFilter() {
                         min={0}
                         max={2500}
                         step={1}
-                        value={range}
-                        onChange={(e) => setRange(e.target.value)}
+                        value={rangeFilter}
+                        onChange={(e) => setRangeFilter(e.target.value)}
                         className="w-100"
                     />
                 </div>
@@ -110,8 +111,8 @@ export default function DesktopFilter() {
                         type="number"
                         name="priceRange"
                         id="priceRange"
-                        value={range}
-                        onChange={(e) => setRange(e.target.value)}
+                        value={rangeFilter}
+                        onChange={(e) => setRangeFilter(e.target.value)}
                         className="form-control-sm border-1 w-50 ms-1"
                     />
                 </div>
@@ -155,7 +156,7 @@ export default function DesktopFilter() {
                         name="sortByRatings"
                         id="rating1"
                         value="4&U"
-                        onChange={(e) => setRating(e.target.value)}
+                        onChange={(e) => setRatingFilter(e.target.value)}
                     />
                     <label className="form-check-label" htmlFor="rating1">
                         4 Stars & above
@@ -168,7 +169,7 @@ export default function DesktopFilter() {
                         name="sortByRatings"
                         id="rating2"
                         value="3&U"
-                        onChange={(e) => setRating(e.target.value)}
+                        onChange={(e) => setRatingFilter(e.target.value)}
                     />
                     <label className="form-check-label" htmlFor="rating2">
                         3 Stars & above
@@ -181,7 +182,7 @@ export default function DesktopFilter() {
                         name="sortByRatings"
                         id="rating3"
                         value="2&U"
-                        onChange={(e) => setRating(e.target.value)}
+                        onChange={(e) => setRatingFilter(e.target.value)}
                     />
                     <label className="form-check-label" htmlFor="rating3">
                         2 Stars & above
@@ -194,7 +195,7 @@ export default function DesktopFilter() {
                         name="sortByRatings"
                         id="rating4"
                         value="1&U"
-                        onChange={(e) => setRating(e.target.value)}
+                        onChange={(e) => setRatingFilter(e.target.value)}
                     />
                     <label className="form-check-label" htmlFor="rating4">
                         1 Star & above
@@ -213,7 +214,7 @@ export default function DesktopFilter() {
                         name="price"
                         id="pricel2h"
                         value={"l2h"}
-                        onChange={(e) => setPrice(e.target.value)}
+                        onChange={(e) => setSortFilter(e.target.value)}
                     />
                     <label className="form-check-label" htmlFor="pricel2h">
                         Price - Low to High
@@ -226,7 +227,7 @@ export default function DesktopFilter() {
                         name="price"
                         id="priceh2l"
                         value={"h2l"}
-                        onChange={(e) => setPrice(e.target.value)}
+                        onChange={(e) => setSortFilter(e.target.value)}
                     />
                     <label className="form-check-label" htmlFor="priceh2l">
                         Price - High to Low

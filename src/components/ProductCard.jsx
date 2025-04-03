@@ -3,6 +3,7 @@ import { MdFavorite } from "react-icons/md";
 import { FaRegHeart } from "react-icons/fa";
 import useProduct from "../contexts/ProductContext";
 import { Link } from "react-router-dom";
+import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 
 export default function ProductCard({ product }) {
     const { toggleWishList, isExistInWishlist, addItemToCart } = useProduct();
@@ -37,7 +38,13 @@ export default function ProductCard({ product }) {
                             {product?.title}
                         </h6>
                     </Link>
-                    <p className="card-text">${product?.price}</p>
+                    <div className="d-flex justify-content-between">
+                        <p className="card-text">${product?.price} </p>
+                        <p className="d-flex align-items-center">
+                            <FaRegStar /> &nbsp;
+                            <span className="align-self-">{product?.rating}</span>
+                        </p>
+                    </div>
 
                     <button
                         className="btn btn-primary btn-sm"

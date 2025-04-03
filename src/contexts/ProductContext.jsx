@@ -1,7 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import productDataList from "../assets/products.json";
-import addressData from "../assets/address.json";
-import { useSearchParams } from "react-router-dom";
 
 const ProductContext = createContext();
 
@@ -10,8 +7,7 @@ export default useProduct;
 
 export function ProductProvider({ children }) {
     const ITEMSPERPAGE = 4;
-    // URL state
-    const [searchParams] = useSearchParams();
+
     // Product related states
     const [productList, setProductList] = useState();
     const [totalPages, setTotalPages] = useState(1);
@@ -36,13 +32,14 @@ export function ProductProvider({ children }) {
     const [actionLoader, setActionLoader] = useState(false);
 
     // Product filter related states
-    const [rating, setRating] = useState();
-    const [range, setRange] = useState();
-    const [category, setCategory] = useState([]);
-    const [searchKeyword, setSearchKeyword] = useState();
-    const [page, setPage] = useState(1);
-    const [sort, setSort] = useState();
+    const [ratingFilter, setRatingFilter] = useState();
+    const [rangeFilter, setRangeFilter] = useState();
+    const [categoryFilter, setCategoryFilter] = useState([]);
+    const [searchKeywordFilter, setSearchKeywordFilter] = useState();
+    const [pageFilter, setPageFilter] = useState(1);
+    const [sortFilter, setSortFilter] = useState();
 
+    // Fetch wishlisted and items added to cart for showing count on navbar
     async function initialLoad() {
         fetchWishlist();
         fetchCart();
@@ -53,39 +50,18 @@ export function ProductProvider({ children }) {
     }, []);
 
     const resetFilter = () => {
-        setRating(null);
-        setCategory([]);
-        setRange(null);
-        setPage(1);
-        setSort(null);
+        setRatingFilter(null);
+        setCategoryFilter([]);
+        setRangeFilter(null);
+        setPageFilter(1);
+        setSortFilter(null);
     };
 
     // Productlist changes based on category
-    const fetchProduct = async () => {
+    const fetchProduct = async (url) => {
         setLoading(true);
         setSelectedProduct(null);
         setProductList(null);
-        let url = `http://localhost:5000/products?`;
-
-        if (category) {
-            url += `${category?.map((cat) => `category=${cat}`).join("&")}`;
-        }
-        if (page) {
-            url += `page=${page}`;
-        }
-        if (rating) {
-            url += `rating=${rating}`;
-        }
-        if (sort) {
-            url += `sort=${sort}`;
-        }
-        if (range) {
-            url += `range=${range}`;
-        }
-        if (searchKeyword) {
-            url += `searchKeyword=${searchKeyword}`;
-        }
-        console.log(url);
 
         await fetch(url)
             .then((res) => res.json())
@@ -468,25 +444,22 @@ export function ProductProvider({ children }) {
                 addresses,
                 order,
                 selectedOrder,
-                rating,
-                range,
-                category,
+                ratingFilter,
+                rangeFilter,
+                categoryFilter,
                 totalPages,
                 wishlistTotalCount,
                 cartTotalCount,
-                page,
-                sort,
-                searchKeyword,
-                resetFilter,
-                setRating,
-                setRange,
-                setCategory,
-                setSearchKeyword,
-                setPage,
-                setSort,
-                setRating,
-                setRange,
-                setCategory,
+                pageFilter,
+                sortFilter,
+                searchKeywordFilter,
+                resetFilter,    
+                setSearchKeywordFilter,
+                setPageFilter,
+                setSortFilter,
+                setRatingFilter,
+                setRangeFilter,
+                setCategoryFilter,
                 initialLoad,
                 getOrderWithId,
                 fetchOrders,
