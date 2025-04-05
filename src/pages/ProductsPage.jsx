@@ -9,7 +9,7 @@ import { TITLE } from "../lib/constants";
 export default function ProductsPage() {
     const { searchParams, fetchProduct, totalPages } = useProduct();
     const createUrl = () => {
-        const baseUrl = "http://localhost:5000/products";
+        const baseUrl = "${BASE_URL}/products";
         const queryString = searchParams.toString();
 
         return `${baseUrl}?${queryString}`;

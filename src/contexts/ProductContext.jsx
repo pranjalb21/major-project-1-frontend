@@ -6,7 +6,7 @@ import {
 } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ITEMSPERPAGE } from "../lib/constants";
+import { BASE_URL, ITEMSPERPAGE } from "../lib/constants";
 
 const ProductContext = createContext();
 
@@ -147,7 +147,7 @@ export function ProductProvider({ children }) {
     const getProductById = async (productId) => {
         setLoading(true);
         setSelectedProduct(null);
-        await fetch(`http://localhost:5000/products/id/${productId}`)
+        await fetch(`${BASE_URL}/products/id/${productId}`)
             .then((res) => res.json())
             .then((data) => setSelectedProduct(data.data))
             .catch((err) => toast.error("Unable to fetch product."))
@@ -157,7 +157,7 @@ export function ProductProvider({ children }) {
     // Get all orders
     const fetchOrders = async () => {
         setLoading(true);
-        await fetch(`http://localhost:5000/order/all`)
+        await fetch(`${BASE_URL}/order/all`)
             .then((res) => res.json())
             .then((data) => setOrder(data.data))
             .catch((err) => toast.error("Unable to fetch orders."))
@@ -167,7 +167,7 @@ export function ProductProvider({ children }) {
     // Get order with ID
     const getOrderWithId = async (orderId) => {
         setLoading(true);
-        await fetch(`http://localhost:5000/order/${orderId}`)
+        await fetch(`${BASE_URL}/order/${orderId}`)
             .then((res) => res.json())
             .then((data) => setSelectedOrder(data.data))
             .catch((err) => toast.error("Unable to fetch order."))
@@ -177,7 +177,7 @@ export function ProductProvider({ children }) {
     // Place order
     const placeOrder = async (orderDetails) => {
         setLoading(true);
-        const postedOrder = await fetch(`http://localhost:5000/order/add`, {
+        const postedOrder = await fetch(`${BASE_URL}/order/add`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -193,7 +193,7 @@ export function ProductProvider({ children }) {
                 toast.error("Something went wrong. Please try again.")
             );
         if (postedOrder) {
-            await fetch(`http://localhost:5000/cart/all`, { method: "DELETE" });
+            await fetch(`${BASE_URL}/cart/all`, { method: "DELETE" });
         }
         setLoading(false);
         await fetchCart();
@@ -204,7 +204,7 @@ export function ProductProvider({ children }) {
     const fetchAddress = async () => {
         setLoading(true);
         setAddresses(null);
-        await fetch(`http://localhost:5000/address/all`)
+        await fetch(`${BASE_URL}/address/all`)
             .then((res) => res.json())
             .then((data) => setAddresses(data.data))
             .catch((err) => toast.error("Faile to load address."))
@@ -215,7 +215,7 @@ export function ProductProvider({ children }) {
     const addAddress = async (addressData) => {
         setLoading(true);
 
-        await fetch(`http://localhost:5000/address/add`, {
+        await fetch(`${BASE_URL}/address/add`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -235,7 +235,7 @@ export function ProductProvider({ children }) {
     const updateAddress = async (addressId, newAddressData) => {
         setLoading(true);
         const newAddresses = await fetch(
-            `http://localhost:5000/address/update/${addressId}`,
+            `${BASE_URL}/address/update/${addressId}`,
             {
                 method: "POST",
                 headers: {
@@ -257,7 +257,7 @@ export function ProductProvider({ children }) {
     const changePrimaryAddress = async (addressId) => {
         setLoading(true);
         await fetch(
-            `http://localhost:5000/address/change/primaryAddress/${addressId}`,
+            `${BASE_URL}/address/change/primaryAddress/${addressId}`,
             {
                 method: "POST",
             }
@@ -275,7 +275,7 @@ export function ProductProvider({ children }) {
     const deleteAddress = async (addressId) => {
         setLoading(true);
         const deletedAddress = await fetch(
-            `http://localhost:5000/address/delete/${addressId}`,
+            `${BASE_URL}/address/delete/${addressId}`,
             {
                 method: "DELETE",
             }
@@ -299,7 +299,7 @@ export function ProductProvider({ children }) {
     const addItemToCart = async (productId) => {
         setLoading(true);
         const addedItem = await fetch(
-            `http://localhost:5000/cart/add/${productId}`,
+            `${BASE_URL}/cart/add/${productId}`,
             { method: "POST" }
         )
             .then((res) => res.json())
@@ -329,7 +329,7 @@ export function ProductProvider({ children }) {
     const addItemWithQuantityToCart = async (productId, quantity) => {
         setLoading(true);
         const addedItem = await fetch(
-            `http://localhost:5000/cart/addQuantity/${productId}`,
+            `${BASE_URL}/cart/addQuantity/${productId}`,
             {
                 method: "POST",
                 headers: { "content-type": "application/json" },
@@ -367,7 +367,7 @@ export function ProductProvider({ children }) {
     const removeItemFromCart = async (productId) => {
         setLoading(true);
         const deletedItem = await fetch(
-            `http://localhost:5000/cart/remove/${productId}`,
+            `${BASE_URL}/cart/remove/${productId}`,
             { method: "DELETE" }
         )
             .then((res) => res.json())
@@ -398,7 +398,7 @@ export function ProductProvider({ children }) {
     const deleteItemFromCart = async (productId) => {
         setLoading(true);
         const deletedItem = await fetch(
-            `http://localhost:5000/cart/delete/${productId}`,
+            `${BASE_URL}/cart/delete/${productId}`,
             { method: "DELETE" }
         )
             .then((res) => res.json())
@@ -425,7 +425,7 @@ export function ProductProvider({ children }) {
         setLoading(true);
 
         if (isExistInWishlist(productId)) {
-            await fetch(`http://localhost:5000/wishlist/remove/${productId}`, {
+            await fetch(`${BASE_URL}/wishlist/remove/${productId}`, {
                 method: "DELETE",
             })
                 .then(() => {
@@ -441,7 +441,7 @@ export function ProductProvider({ children }) {
                 )
                 .finally(() => setLoading(false));
         } else {
-            await fetch(`http://localhost:5000/wishlist/add/${productId}`, {
+            await fetch(`${BASE_URL}/wishlist/add/${productId}`, {
                 method: "POST",
             })
                 .then((res) => res.json())
@@ -478,7 +478,7 @@ export function ProductProvider({ children }) {
         setWishlist(null);
         setWishlistTotalCount(0);
         setWishlistTotalPage(1);
-        await fetch(`http://localhost:5000/wishlist/all?page=${page}`)
+        await fetch(`${BASE_URL}/wishlist/all?page=${page}`)
             .then((res) => res.json())
             .then((data) => {
                 setWishlist(data.data);
@@ -492,7 +492,7 @@ export function ProductProvider({ children }) {
     const fetchCart = async (page = 1) => {
         setLoading(true);
         setCart(null);
-        await fetch(`http://localhost:5000/cart/all?page=${page}`)
+        await fetch(`${BASE_URL}/cart/all?page=${page}`)
             .then((res) => res.json())
             .then((data) => {
                 setCart(data.data);
