@@ -1,107 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import useProduct from "../contexts/ProductContext";
 
-export default function Pagination({ totalPages }) {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [currentPage, setCurrentPage] = useState(
-        parseInt(searchParams.get("page")) || 1 // Ensure a valid number
-    );
-
-    const decreasePage = () => {
-        if (currentPage > 1) {
-            const newPage = currentPage - 1;
-            setCurrentPage(newPage);
-            setSearchParams({
-                ...Object.fromEntries(searchParams.entries()),
-                page: newPage,
-            });
+export default function Pagination() {
+    const { totalPages, loading, pageFilter, setFilters } = useProduct();
+    const handlePageNumber = (page) => {
+        if (page > 1) {
+            setFilters({ page: page || 1 });
         }
     };
 
-    const increasePage = () => {
-        if (currentPage < totalPages) {
-            const newPage = currentPage + 1;
-            setCurrentPage(newPage);
-            setSearchParams({
-                ...Object.fromEntries(searchParams.entries()),
-                page: newPage,
-            });
-        }
-    };
-
-    useEffect(() => {
-        if (!searchParams.get("page")) {
-            setSearchParams({ page: currentPage });
-        }
-    }, [searchParams, setSearchParams, currentPage]);
-
-    return (
+    return !loading && totalPages > 1 ? (
         <nav aria-label="Page navigation example">
             <ul className="pagination justify-content-center">
-                {/* Previous Page */}
                 <li
-                    className={`page-item ${
-                        currentPage <= 1 ? "disabled" : ""
+                    className={`page-item page-link ${
+                        pageFilter <= 1 ? "disabled" : ""
                     }`}
-                    onClick={decreasePage}
                 >
-                    <Link
-                        className="page-link"
-                        to={`?${new URLSearchParams({
-                            ...Object.fromEntries(searchParams.entries()),
-                            page: currentPage - 1,
-                        }).toString()}`}
-                    >
-                        Previous
-                    </Link>
+                    Previous
                 </li>
 
-                {/* Pages */}
-                {Array.from({ length: totalPages }).map((_, index) => (
-                    <li
-                        className={`page-item ${
-                            currentPage === index + 1 ? "active" : ""
-                        }`}
-                        key={index}
-                        onClick={() => {
-                            const newPage = index + 1;
-                            setCurrentPage(newPage);
-                            setSearchParams({
-                                ...Object.fromEntries(searchParams.entries()),
-                                page: newPage,
-                            });
-                        }}
-                    >
-                        <Link
-                            className="page-link"
-                            to={`?${new URLSearchParams({
-                                ...Object.fromEntries(searchParams.entries()),
-                                page: index + 1,
-                            }).toString()}`}
+                {Array.from({ length: totalPages }, (_, index) => {
+                    return (
+                        <li
+                            className={`page-link page-item ${
+                                index + 1 === pageFilter ? "active" : ""
+                            }`}
+                            key={index + 1}
+                            onClick={() => handlePageNumber(index + 1)}
                         >
                             {index + 1}
-                        </Link>
-                    </li>
-                ))}
-
-                {/* Next Page */}
+                        </li>
+                    );
+                })}
                 <li
-                    className={`page-item ${
-                        currentPage >= totalPages ? "disabled" : ""
+                    className={`page-item page-link ${
+                        pageFilter >= totalPages ? "disabled" : ""
                     }`}
-                    onClick={increasePage}
                 >
-                    <Link
-                        className="page-link px-4"
-                        to={`?${new URLSearchParams({
-                            ...Object.fromEntries(searchParams.entries()),
-                            page: currentPage + 1,
-                        }).toString()}`}
-                    >
-                        Next
-                    </Link>
+                    Next
                 </li>
             </ul>
         </nav>
+    ) : (
+        ""
     );
 }

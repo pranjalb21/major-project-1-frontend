@@ -19,25 +19,20 @@ function App() {
     const { loading } = useProduct();
     return (
         <div className="d-flex flex-column min-vh-100 bg-light position-relative">
-            <BrowserRouter>
-                <Navbar />
-                {loading && <Spinner />}
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/wishlist" element={<Wishlist />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/order" element={<Order />} />
-                    <Route path="/order/:orderId" element={<OrderDetails />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/product/:id" element={<ProductDetails />} />
-                    <Route
-                        path="/products"
-                        element={<ProductsPage />}
-                    />
-                </Routes>
-                <Footer />
-            </BrowserRouter>
+            <Navbar />
+            {loading && <Spinner />}
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/order" element={<Order />} />
+                <Route path="/order/:orderId" element={<OrderDetails />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/products" element={<ProductsPage />} />
+            </Routes>
+            <Footer />
         </div>
     );
 }

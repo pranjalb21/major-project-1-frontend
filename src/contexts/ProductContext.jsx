@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
+import { useSearchParams } from "react-router-dom";
 
 const ProductContext = createContext();
 
@@ -31,13 +38,84 @@ export function ProductProvider({ children }) {
     const [loading, setLoading] = useState(false);
     const [actionLoader, setActionLoader] = useState(false);
 
-    // Product filter related states
-    const [ratingFilter, setRatingFilter] = useState();
-    const [rangeFilter, setRangeFilter] = useState();
-    const [categoryFilter, setCategoryFilter] = useState([]);
-    const [searchKeywordFilter, setSearchKeywordFilter] = useState();
-    const [pageFilter, setPageFilter] = useState(1);
-    const [sortFilter, setSortFilter] = useState();
+    // Product filter related variables
+    const [searchParams, setSearchParams] = useSearchParams();
+    const categoryFilter = searchParams.getAll("category") || [];
+    const priceFilter = parseInt(searchParams.get("price")) || 2500;
+    const ratingFilter = parseFloat(searchParams.get("rating")) || undefined;
+    const sortFilter = searchParams.get("sort") || undefined;
+    const searchTextFilter = searchParams.get("searchText") || "";
+    const pageFilter = parseInt(searchParams.get("page")) || 1;
+
+    // Default filter values
+    const defaultFilters = {
+        category: [], // no categories selected
+        price: 2500, // default price is 2500
+        rating: undefined, // no rating filter, so leave it empty (or undefined)
+        sort: undefined, // no sort filter
+        searchText: "", // empty search
+        page: 1,
+    };
+    const setFilters = (filters) => {
+        setSearchParams((params) => {
+            if (filters.category && filters.category.length > 0) {
+                params.delete("category");
+                filters.category.forEach((cat) => {
+                    params.append("category", cat);
+                });
+                params.set("page", filters.page || 1);
+            }
+            if (filters.price !== undefined) {
+                if (filters.price === "") {
+                    params.delete("price");
+                } else {
+                    params.set("price", filters.price);
+                }
+                params.set("page", filters.page || 1);
+            }
+            if (filters.rating !== undefined) {
+                if (filters.rating === "") {
+                    params.delete("rating");
+                } else {
+                    params.set("rating", filters.rating);
+                }
+                params.set("page", filters.page || 1);
+            }
+            if (filters.sort !== undefined) {
+                if (filters.sort === "") {
+                    params.delete("sort");
+                } else {
+                    params.set("sort", filters.sort);
+                }
+                params.set("page", filters.page || 1);
+            }
+            if (filters.searchText !== undefined) {
+                if (filters.searchText === "") {
+                    params.delete("searchText");
+                } else {
+                    params.set("searchText", filters.searchText);
+                }
+                params.set("page", filters.page || 1);
+            }
+            if (filters.page !== undefined) {
+                params.set("page", filters.page);
+            }
+
+            return params;
+        });
+    };
+
+    const resetFilter = () => {
+        setSearchParams((params) => {
+            params.delete("category");
+            params.delete("price");
+            params.delete("rating");
+            params.delete("sort");
+            params.delete("searchText");
+            params.delete("page");
+            return params;
+        });
+    };
 
     // Fetch wishlisted and items added to cart for showing count on navbar
     async function initialLoad() {
@@ -48,14 +126,6 @@ export function ProductProvider({ children }) {
     useEffect(() => {
         initialLoad();
     }, []);
-
-    const resetFilter = () => {
-        setRatingFilter(null);
-        setCategoryFilter([]);
-        setRangeFilter(null);
-        setPageFilter(1);
-        setSortFilter(null);
-    };
 
     // Productlist changes based on category
     const fetchProduct = async (url) => {
@@ -171,7 +241,6 @@ export function ProductProvider({ children }) {
             .then((res) => res.json())
             .then((data) => data.data)
             .catch((err) => console.log(err));
-        console.log(newAddresses, "All");
 
         if (newAddresses) {
             setAddresses(newAddresses);
@@ -444,22 +513,20 @@ export function ProductProvider({ children }) {
                 addresses,
                 order,
                 selectedOrder,
-                ratingFilter,
-                rangeFilter,
-                categoryFilter,
+                defaultFilters,
+                pageFilter,
                 totalPages,
                 wishlistTotalCount,
                 cartTotalCount,
-                pageFilter,
+                searchParams,
+                categoryFilter,
+                priceFilter,
+                ratingFilter,
                 sortFilter,
-                searchKeywordFilter,
-                resetFilter,    
-                setSearchKeywordFilter,
-                setPageFilter,
-                setSortFilter,
-                setRatingFilter,
-                setRangeFilter,
-                setCategoryFilter,
+                searchTextFilter,
+
+                resetFilter,
+                setFilters,
                 initialLoad,
                 getOrderWithId,
                 fetchOrders,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Products from "../components/Products";
 import DesktopFilter from "../components/DesktopFilter";
 import MobileFilter from "../components/MobileFilter";
@@ -7,59 +7,29 @@ import useProduct from "../contexts/ProductContext";
 import { useSearchParams } from "react-router-dom";
 
 export default function ProductsPage() {
-    const {
-        totalPages,
-        fetchProduct,
-        resetFilter,
-        setCategoryFilter,
-        setPageFilter,
-    } = useProduct();
+    const { searchParams, fetchProduct, totalPages } = useProduct();
+    const createUrl = () => {
+        const baseUrl = "http://localhost:5000/products";
+        const queryString = searchParams.toString();
 
-    // URL state
-    const [searchParams] = useSearchParams();
-    const loadProduct = async () => {
-        let url = `http://localhost:5000/products?`;
-        const category = searchParams.getAll("category");
-        const rating = searchParams.get("rating");
-        const sort = searchParams.get("sort");
-        const range = searchParams.get("range");
-        const searchKeyword = searchParams.get("searchKeyword");
-        const page = searchParams.get("page");
-        if (category.length > 0) {
-            url += `${category?.map((cat) => `category=${cat}`).join("&")}`;
-            setCategoryFilter(category);
-        }
-        if (page) {
-            url += `&page=${page}`;
-            setPageFilter(page);
-        }
-        if (rating) {
-            url += `&rating=${rating}`;
-        }
-        if (sort) {
-            url += `&sort=${sort}`;
-        }
-        if (range) {
-            url += `&range=${range}`;
-        }
-        if (searchKeyword) {
-            url += `&searchKeyword=${searchKeyword}`;
-        }
-        console.log(url);
-        fetchProduct(url);
+        return `${baseUrl}?${queryString}`;
     };
+    const loadProduct = async () => {
+        const url = createUrl();
+        await fetchProduct(url);
+    };
+
     useEffect(() => {
         loadProduct();
     }, [searchParams]);
-    useEffect(() => {
-        resetFilter();
-    }, []);
-
     return (
         <div className="row">
+            {/* Sidebar Filter */}
             <div className="col-md-3 col-xl-2 d-none d-md-block">
                 <DesktopFilter />
             </div>
+
+            {/* Main Content */}
             <div className="col-md-9 col-12 col-xl-10">
                 <div className="d-flex flex-column h-100">
                     <MobileFilter />

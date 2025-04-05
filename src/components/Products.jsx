@@ -4,15 +4,21 @@ import ProductCard from "./ProductCard";
 
 export default function Products({ currentPage }) {
     // Parse query parameters
-    const { productList } = useProduct();
+    const { productList, loading } = useProduct();
 
     return (
-        <div className="container mt-3">
-            <div className="row g-3">
-                {productList?.map((p) => (
-                    <ProductCard product={p} key={p._id} />
+        <div className="container mt-3 mb-3">
+            {productList &&
+                !loading &&
+                (productList?.length > 0 ? (
+                    <div className="row g-3">
+                        {productList?.map((p) => (
+                            <ProductCard product={p} key={p._id} />
+                        ))}
+                    </div>
+                ) : (
+                    <p>No product found.</p>
                 ))}
-            </div>
         </div>
     );
 }

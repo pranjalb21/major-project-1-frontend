@@ -1,89 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { categories } from "../pages/Home";
 import useProduct from "../contexts/ProductContext";
 
 export default function DesktopFilter() {
-    const [queryParams, setQueryParams] = useSearchParams();
     const {
-        ratingFilter,
-        setRatingFilter,
-        rangeFilter,
-        setRangeFilter,
+        searchParams,
         categoryFilter,
-        setCategoryFilter,
-        searchKeywordFilter,
-        setSearchKeywordFilter,
-        pageFilter,
-        setPageFilter,
+        priceFilter,
+        ratingFilter,
         sortFilter,
-        setSortFilter,
+        searchTextFilter,
+        setFilters,
         resetFilter,
-        fetchProduct,
     } = useProduct();
+
     const handleCategoryChange = (e) => {
-        const { value, checked } = e.target;
+        const { value, checked } = e.target; // Correctly destructure value and checked
+        let categoryList = [...categoryFilter]; // Copy the current category filter to avoid mutating state directly
+
         if (checked) {
-            setCategoryFilter((prev) => [...prev, value]);
+            categoryList.push(value); // Add the category if checked
         } else {
-            const newCategory = categoryFilter.filter((c) => c != value);
-            setCategoryFilter(newCategory);
+            categoryList = categoryList.filter((c) => c !== value); // Remove the category if unchecked
         }
+
+        setFilters({ category: categoryList });
     };
 
-    const setURL = () => {
-        const params = new URLSearchParams();
-        if (ratingFilter) {
-            params.append("rating", ratingFilter);
-        } else {
-            params.delete("rating");
-        }
-        if (rangeFilter) {
-            params.append("range", rangeFilter);
-        } else {
-            params.delete("range");
-        }
-        if (searchKeywordFilter) {
-            params.append("searchKeyword", searchKeywordFilter);
-        } else {
-            params.delete("searchKeyword");
-        }
-        if (pageFilter) {
-            params.append("page", pageFilter);
-        } else {
-            params.delete("page");
-        }
-        if (sortFilter) {
-            params.append("sort", sortFilter);
-        } else {
-            params.delete("sort");
-        }
-        if (categoryFilter.length > 0) {
-            categoryFilter.forEach((cat) => {
-                params.append("category", cat);
-            });
-        } else {
-            params.delete("category");
-        }
-        setQueryParams(params);
-    };
-    useEffect(() => {
-        setURL()
-    }, [
-        categoryFilter,
-        pageFilter,
-        ratingFilter,
-        sortFilter,
-        rangeFilter,
-        searchKeywordFilter,
-    ]);
     return (
         <div className="w-100 h-100 bg-white p-2">
+            {/* Filters Header */}
             <div>
                 <p className="d-flex fs-5 fw-bold">
-                    Filters{" "}
+                    Filters
                     <Link
-                        className="ms-auto fw-normal fs-6 align-self-end"
+                        to={"/products"}
+                        className="ms-auto fw-normal fs-6 align-self-end btn btn-link"
                         onClick={resetFilter}
                     >
                         Clear
@@ -91,53 +44,46 @@ export default function DesktopFilter() {
                 </p>
             </div>
             <hr className="m-0 mt-2 mb-1" />
+
+            {/* Price Filter */}
             <div>
                 <label className="form-label fw-bold fs-6">Price</label>
-                <div>
-                    <input
-                        type="range"
-                        name="priceRange"
-                        id="priceRange"
-                        min={0}
-                        max={2500}
-                        step={1}
-                        value={rangeFilter}
-                        onChange={(e) => setRangeFilter(e.target.value)}
-                        className="w-100"
-                    />
-                </div>
-                <div>
-                    <input
-                        type="number"
-                        name="priceRange"
-                        id="priceRange"
-                        value={rangeFilter}
-                        onChange={(e) => setRangeFilter(e.target.value)}
-                        className="form-control-sm border-1 w-50 ms-1"
-                    />
-                </div>
+                <input
+                    type="range"
+                    min={0}
+                    max={2500}
+                    step={1}
+                    className="w-100"
+                    value={priceFilter}
+                    onChange={(e) => setFilters({ price: e.target.value })}
+                />
+                <input
+                    type="number"
+                    name="priceRange"
+                    id="priceRange"
+                    className="form-control-sm border-1 w-50 ms-1"
+                    value={priceFilter}
+                    onChange={(e) => setFilters({ price: e.target.value })}
+                />
             </div>
             <hr className="m-0 mt-2 mb-1" />
-            <div className="">
-                <label htmlFor="" className="form-label fw-bold fs-6">
-                    Category
-                </label>
+
+            {/* Category Filter */}
+            <div>
+                <label className="form-label fw-bold fs-6">Category</label>
                 {categories.map((category) => (
-                    <div className="form-check ms-3" key={category.id}>
+                    <div className="form-check ms-3" key={category.name}>
                         <input
                             className="form-check-input"
                             type="checkbox"
-                            id={category.name}
-                            name="category"
-                            onChange={(e) => {
-                                handleCategoryChange(e);
-                                console.log(category);
-                            }}
                             value={category.name}
+                            id={`category-${category.name}`}
+                            checked={categoryFilter.includes(category.name)}
+                            onChange={handleCategoryChange}
                         />
                         <label
                             className="form-check-label text-capitalize"
-                            htmlFor={category.name}
+                            htmlFor={`category-${category.name}`}
                         >
                             {category.name}
                         </label>
@@ -145,91 +91,60 @@ export default function DesktopFilter() {
                 ))}
             </div>
             <hr className="m-0 mt-2 mb-1" />
-            <div className="">
-                <label htmlFor="" className="form-label fw-bold fs-6">
-                    Rating
-                </label>
-                <div className="form-check ms-3">
-                    <input
-                        className="form-check-input"
-                        type="radio"
-                        name="sortByRatings"
-                        id="rating1"
-                        value="4&U"
-                        onChange={(e) => setRatingFilter(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="rating1">
-                        4 Stars & above
-                    </label>
-                </div>
-                <div className="form-check ms-3">
-                    <input
-                        className="form-check-input"
-                        type="radio"
-                        name="sortByRatings"
-                        id="rating2"
-                        value="3&U"
-                        onChange={(e) => setRatingFilter(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="rating2">
-                        3 Stars & above
-                    </label>
-                </div>
-                <div className="form-check ms-3">
-                    <input
-                        className="form-check-input"
-                        type="radio"
-                        name="sortByRatings"
-                        id="rating3"
-                        value="2&U"
-                        onChange={(e) => setRatingFilter(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="rating3">
-                        2 Stars & above
-                    </label>
-                </div>
-                <div className="form-check ms-3">
-                    <input
-                        className="form-check-input"
-                        type="radio"
-                        name="sortByRatings"
-                        id="rating4"
-                        value="1&U"
-                        onChange={(e) => setRatingFilter(e.target.value)}
-                    />
-                    <label className="form-check-label" htmlFor="rating4">
-                        1 Star & above
-                    </label>
-                </div>
+
+            {/* Rating Filter */}
+            <div>
+                <label className="form-label fw-bold fs-6">Rating</label>
+                {[4, 3, 2, 1].map((rating) => (
+                    <div className="form-check ms-3" key={rating}>
+                        <input
+                            type="radio"
+                            name="rating"
+                            value={`${rating}`}
+                            id={`rating-${rating}`}
+                            className="form-check-input"
+                            checked={ratingFilter == `${rating}`}
+                            onChange={(e) => {
+                                setFilters({ rating: e.target.value });
+                            }}
+                        />
+                        <label
+                            className="form-check-label"
+                            htmlFor={`rating-${rating}`}
+                        >{`${rating} Stars & above`}</label>
+                    </div>
+                ))}
             </div>
             <hr className="m-0 mt-2 mb-1" />
-            <div className="">
-                <label htmlFor="" className="form-label fw-bold fs-6">
-                    Sort By
-                </label>
+
+            {/* Sort Filter */}
+            <div>
+                <label className="form-label fw-bold fs-6">Sort By</label>
                 <div className="form-check ms-3">
                     <input
-                        className="form-check-input"
                         type="radio"
-                        name="price"
-                        id="pricel2h"
-                        value={"l2h"}
-                        onChange={(e) => setSortFilter(e.target.value)}
+                        name="sort"
+                        value="l2h"
+                        className="form-check-input"
+                        id={`l2h`}
+                        checked={sortFilter === "l2h"}
+                        onChange={() => setFilters({ sort: "l2h" })}
                     />
-                    <label className="form-check-label" htmlFor="pricel2h">
+                    <label className="form-check-label" htmlFor="l2h">
                         Price - Low to High
                     </label>
                 </div>
                 <div className="form-check ms-3">
                     <input
-                        className="form-check-input"
                         type="radio"
-                        name="price"
-                        id="priceh2l"
-                        value={"h2l"}
-                        onChange={(e) => setSortFilter(e.target.value)}
+                        name="sort"
+                        value="h2l"
+                        className="form-check-input"
+                        id={`h2l`}
+                        checked={sortFilter === "h2l"}
+                        onChange={() => setFilters({ sort: "h2l" })}
                     />
-                    <label className="form-check-label" htmlFor="priceh2l">
+                    <label className="form-check-label" htmlFor="h2l">
                         Price - High to Low
                     </label>
                 </div>
