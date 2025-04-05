@@ -6,6 +6,7 @@ export default function Order() {
     const { fetchOrders, order } = useProduct();
     useEffect(() => {
         fetchOrders();
+        document.title = TITLE + "Order";
     }, []);
     return (
         <main className="container mt-3 mb-4">

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useProduct from "../contexts/ProductContext";
 import CountModifier from "../components/CountModifier";
+import { TITLE } from "../lib/constants";
+
 export default function Cart() {
     const {
         cart,
@@ -16,6 +18,7 @@ export default function Cart() {
     useEffect(() => {
         fetchCart();
         fetchAddress();
+        document.title = TITLE + "Cart";
     }, []);
 
     // Calculate discounted price of every product

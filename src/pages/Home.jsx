@@ -28,6 +28,8 @@ export default function Home() {
     const { fetchCart, fetchWishlist, initialLoad } = useProduct();
     useEffect(() => {
         initialLoad();
+        document.title = TITLE + "Home";
+
     }, []);
     return (
         <main className="container mt-3">

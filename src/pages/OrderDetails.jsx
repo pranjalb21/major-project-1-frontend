@@ -8,6 +8,10 @@ export default function OrderDetails() {
     useEffect(() => {
         getOrderWithId(orderId);
     }, [orderId]);
+
+    useEffect(() => {
+        document.title = TITLE + "Order Details";
+    }, []);
     // Calculate discounted price of every product
     const calculateDiscountPrice = (product) => {
         return parseFloat(

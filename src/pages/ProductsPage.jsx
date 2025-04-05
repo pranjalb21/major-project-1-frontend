@@ -21,6 +21,9 @@ export default function ProductsPage() {
     useEffect(() => {
         loadProduct();
     }, [searchParams]);
+    useEffect(() => {
+        document.title = TITLE + "Products";
+    }, []);
     return (
         <div className="row">
             {/* Sidebar Filter */}

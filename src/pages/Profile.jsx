@@ -91,6 +91,8 @@ export default function Profile() {
     };
     useEffect(() => {
         fetchAddress();
+        document.title = TITLE + "Profile";
+
     }, []);
     return (
         <main className="d-flex justify-content-center">

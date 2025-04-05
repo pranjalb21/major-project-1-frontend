@@ -4,7 +4,9 @@ import useProduct from "../contexts/ProductContext";
 import Pagination from "../components/Pagination";
 export default function Wishlist() {
     const { wishlist } = useProduct();
-
+    useEffect(() => {
+        document.title = TITLE + "Wishlist";
+    }, []);
     return (
         <main className="container">
             <div className="d-flex flex-column h-100 ">

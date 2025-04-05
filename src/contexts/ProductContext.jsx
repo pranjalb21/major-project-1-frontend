@@ -1,12 +1,12 @@
 import {
     createContext,
-    useCallback,
     useContext,
     useEffect,
     useState,
 } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ITEMSPERPAGE } from "../lib/constants";
 
 const ProductContext = createContext();
 
@@ -14,8 +14,6 @@ const useProduct = () => useContext(ProductContext);
 export default useProduct;
 
 export function ProductProvider({ children }) {
-    const ITEMSPERPAGE = 4;
-
     // Product related states
     const [productList, setProductList] = useState();
     const [totalPages, setTotalPages] = useState(1);

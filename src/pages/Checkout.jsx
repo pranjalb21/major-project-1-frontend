@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import SuccessfullOrder from "../components/SuccessfullOrder";
 
 export default function Checkout() {
+    useEffect(() => {
+        document.title = TITLE + "Checkout";
+    }, []);
     const { addresses, placeOrder, cart } = useProduct();
     const [orderPlacedLoader, setOrderPlacedLoader] = useState(false);
     const [shippingAddress, setShippingAddress] = useState();

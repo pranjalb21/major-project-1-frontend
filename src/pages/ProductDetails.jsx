@@ -25,6 +25,7 @@ export default function ProductDetails() {
     };
     useEffect(() => {
         getProductById(id);
+        document.title = TITLE + "Product Details";
     }, []);
     return (
         <main className="container">
