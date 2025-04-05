@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useProduct from "../contexts/ProductContext";
 import Rating from "../components/Rating";
 import QuantityModifier from "../components/QuantityModifier";
@@ -11,8 +11,12 @@ import { GiBoxUnpacking } from "react-icons/gi";
 
 export default function ProductDetails() {
     const { id } = useParams();
-    const { getProductById, selectedProduct, addItemWithQuantityToCart } =
-        useProduct();
+    const {
+        getProductById,
+        selectedProduct,
+        addItemWithQuantityToCart,
+        cartTotalCount,
+    } = useProduct();
     const [quantity, setQuantity] = useState(1);
 
     const addCart = () => {
@@ -33,19 +37,6 @@ export default function ProductDetails() {
                                 alt={selectedProduct.title}
                                 className="img-fluid"
                             />
-                            <button className="btn btn-sm btn-secondary mt-2">
-                                Buy Now
-                            </button>
-                            <button
-                                className={`btn btn-sm btn-${
-                                    selectedProduct.isAddedToCart
-                                        ? "danger"
-                                        : "warning"
-                                } mt-2`}
-                                onClick={() => addCart()}
-                            >
-                                Add to Cart
-                            </button>
                         </div>
                         <div className="col-md-8">
                             <div>
@@ -79,6 +70,29 @@ export default function ProductDetails() {
                                         quantity={quantity}
                                         setQuantity={setQuantity}
                                     />
+                                </div>
+                                <div className="row mt-2 g-2">
+                                    <div className="col-md-6">
+                                        <button
+                                            className={`btn btn-sm md-w-50 w-100 btn-warning`}
+                                            onClick={() => addCart()}
+                                        >
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                    <div className="col-md-6">
+                                        {cartTotalCount > 0 ? (
+                                            <Link to={"/cart"}>
+                                                <button
+                                                    className={`btn btn-sm md-w-50 w-100 btn-info`}
+                                                >
+                                                    Go to Cart
+                                                </button>
+                                            </Link>
+                                        ) : (
+                                            ""
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <hr />
@@ -122,7 +136,10 @@ export default function ProductDetails() {
                                     <li>Brand: {selectedProduct.brand}</li>
                                     <li>Weight: {selectedProduct.weight} KG</li>
                                     <li>
-                                        Dimentions: {selectedProduct.dimensions.width} X {selectedProduct.dimensions.height} X {selectedProduct.dimensions.depth} cms
+                                        Dimentions:{" "}
+                                        {selectedProduct.dimensions.width} X{" "}
+                                        {selectedProduct.dimensions.height} X{" "}
+                                        {selectedProduct.dimensions.depth} cms
                                     </li>
                                 </ul>
                             </div>

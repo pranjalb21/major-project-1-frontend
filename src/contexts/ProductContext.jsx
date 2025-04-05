@@ -370,10 +370,9 @@ export function ProductProvider({ children }) {
                 const newCart = [...cart, addedItem];
                 setCart(newCart);
             }
-            const newCount = cart.reduce(
-                (acc, curr) => acc + curr.productCount,
-                0
-            );
+
+            let newCount = cartTotalCount + addedItem.productCount;
+
             setCartTotalCount(newCount);
         } else {
             console.log("Error while adding to cart");
