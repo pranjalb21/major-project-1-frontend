@@ -14,7 +14,86 @@ export default function Navbar() {
     }, []);
     return (
         <>
-            <nav className="navbar navbar-expand-md navbar-light">
+            <header>
+                <div className="container">
+                    <nav class="navbar navbar-expand-lg navbar-light">
+                        <div class="container-fluid">
+                            <NavLink className="navbar-brand" to="/">
+                                MyShopping
+                            </NavLink>
+                            <button
+                                class="navbar-toggler"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#navbarNav"
+                                aria-controls="navbarNav"
+                                aria-expanded="false"
+                                aria-label="Toggle navigation"
+                            >
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div
+                                class="collapse navbar-collapse justify-content-end"
+                                id="navbarNav"
+                            >
+                                <ul class="navbar-nav">
+                                    <Search />
+
+                                    <li className="nav-item">
+                                        <NavLink
+                                            className="nav-link ms-2"
+                                            to="/profile"
+                                        >
+                                            Profile
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink
+                                            className="nav-link ms-2"
+                                            to="/order"
+                                        >
+                                            Order
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item ms-2">
+                                        <NavLink
+                                            className="nav-link"
+                                            to="/wishlist"
+                                        >
+                                            Wishlist
+                                            {wishlistTotalCount &&
+                                            wishlistTotalCount > 0 ? (
+                                                <CountPill
+                                                    count={wishlistTotalCount}
+                                                />
+                                            ) : (
+                                                ""
+                                            )}
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item ms-2">
+                                        <NavLink
+                                            className="nav-link position-relative"
+                                            to="/cart"
+                                        >
+                                            Cart
+                                            {cartTotalCount &&
+                                            cartTotalCount > 0 ? (
+                                                <CountPill
+                                                    count={cartTotalCount}
+                                                />
+                                            ) : (
+                                                ""
+                                            )}
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </header>
+            {/* <nav className="navbar navbar-expand-md navbar-light">
                 <div className="container-fluid px-5">
                     <NavLink className="navbar-brand" to="/">
                         MyShopping
@@ -74,7 +153,7 @@ export default function Navbar() {
                         </ul>
                     </div>
                 </div>
-            </nav>
+            </nav> */}
             <hr className="p-0 m-0" />
         </>
     );
