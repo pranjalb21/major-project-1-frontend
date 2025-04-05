@@ -3,7 +3,7 @@ import { MdFavorite } from "react-icons/md";
 import { FaRegHeart } from "react-icons/fa";
 import useProduct from "../contexts/ProductContext";
 import { Link } from "react-router-dom";
-import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
+import { FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 
 export default function ProductCard({ product }) {
     const { toggleWishList, isExistInWishlist, addItemToCart } = useProduct();

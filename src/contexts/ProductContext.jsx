@@ -335,6 +335,7 @@ export function ProductProvider({ children }) {
                 const newCart = [...cart, addedItem];
                 setCart(newCart);
             }
+            setCartTotalCount((count) => count + 1);
         } else {
             console.log("Error while adding to cart");
         }
@@ -369,6 +370,11 @@ export function ProductProvider({ children }) {
                 const newCart = [...cart, addedItem];
                 setCart(newCart);
             }
+            const newCount = cart.reduce(
+                (acc, curr) => acc + curr.productCount,
+                0
+            );
+            setCartTotalCount(newCount);
         } else {
             console.log("Error while adding to cart");
         }
@@ -399,6 +405,7 @@ export function ProductProvider({ children }) {
                 );
                 setCart(newCart);
             }
+            setCartTotalCount((count) => count - 1);
         } else {
             console.log("Error while removing from cart");
         }
@@ -415,10 +422,16 @@ export function ProductProvider({ children }) {
             .then((data) => data.data)
             .catch((err) => console.log(err));
         if (deletedItem) {
+            const deletedCartItem = cart.filter(
+                (cartItem) => cartItem.productId._id == productId
+            );
             const newCart = cart.filter(
                 (cartItem) => cartItem.productId._id !== productId
             );
             setCart(newCart);
+            setCartTotalCount(
+                (count) => count - deletedCartItem[0].productCount
+            );
         } else {
             console.log("Error while deleting from cart");
         }
@@ -438,6 +451,7 @@ export function ProductProvider({ children }) {
                         (product) => product.productId._id !== productId
                     );
                     setWishlist(newWishlist);
+                    setWishlistTotalCount((count) => count - 1);
                 })
                 .catch((err) => console.log(err))
                 .finally(() => setLoading(false));
@@ -449,6 +463,7 @@ export function ProductProvider({ children }) {
                 .then((data) => {
                     const newWishlist = [...wishlist, data.data];
                     setWishlist(newWishlist);
+                    setWishlistTotalCount((count) => count + 1);
                 })
                 .catch((err) => console.log(err))
                 .finally(() => setLoading(false));
@@ -482,7 +497,6 @@ export function ProductProvider({ children }) {
             .then((data) => {
                 setWishlist(data.data);
                 setWishlistTotalCount(data.totalCount);
-                setWishlistTotalPage(Math.ceil(data.totalCount / ITEMSPERPAGE));
             })
             .catch((err) => console.log(err))
             .finally(() => setLoading(false));
@@ -496,7 +510,11 @@ export function ProductProvider({ children }) {
             .then((res) => res.json())
             .then((data) => {
                 setCart(data.data);
-                setCartTotalCount(data.totalCount);
+                const newCount = data.data.reduce(
+                    (acc, curr) => acc + curr.productCount,
+                    0
+                );
+                setCartTotalCount(newCount);
             })
             .catch((err) => console.log(err))
             .finally(() => setLoading(false));

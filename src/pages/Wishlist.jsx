@@ -3,11 +3,7 @@ import ProductCard from "../components/ProductCard";
 import useProduct from "../contexts/ProductContext";
 import Pagination from "../components/Pagination";
 export default function Wishlist() {
-    const { wishlist, fetchWishlist, totalPages } = useProduct();
-    const [currentPage, setCurrentPage] = useState(1);
-    useEffect(() => {
-        fetchWishlist(currentPage);
-    }, [currentPage]);
+    const { wishlist } = useProduct();
 
     return (
         <main className="container">
@@ -27,13 +23,6 @@ export default function Wishlist() {
                             </div>
                         )}
                     </div>
-                </div>
-                <div className="">
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                    />
                 </div>
             </div>
         </main>
