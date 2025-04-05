@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import useProduct from "../contexts/ProductContext";
 import Pagination from "../components/Pagination";
+import { TITLE } from "../lib/constants";
 export default function Wishlist() {
     const { wishlist } = useProduct();
     useEffect(() => {

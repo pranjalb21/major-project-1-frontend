@@ -8,6 +8,7 @@ import { MdLocalPostOffice } from "react-icons/md";
 import { FiTruck } from "react-icons/fi";
 import { TbTruckReturn } from "react-icons/tb";
 import { GiBoxUnpacking } from "react-icons/gi";
+import { TITLE } from "../lib/constants";
 
 export default function ProductDetails() {
     const { id } = useParams();

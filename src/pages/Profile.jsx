@@ -3,6 +3,7 @@ import { MdOutlineDeleteOutline } from "react-icons/md";
 import { CiSquarePlus } from "react-icons/ci";
 import useProduct from "../contexts/ProductContext";
 import { BiEdit } from "react-icons/bi";
+import { TITLE } from "../lib/constants";
 
 export default function Profile() {
     const defaultAddress = {

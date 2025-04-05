@@ -4,6 +4,7 @@ import DesktopFilter from "../components/DesktopFilter";
 import MobileFilter from "../components/MobileFilter";
 import Pagination from "../components/Pagination";
 import useProduct from "../contexts/ProductContext";
+import { TITLE } from "../lib/constants";
 
 export default function ProductsPage() {
     const { searchParams, fetchProduct, totalPages } = useProduct();

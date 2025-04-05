@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import useProduct from "../contexts/ProductContext";
 import { Link } from "react-router-dom";
+import { TITLE } from "../lib/constants";
 
 export default function Order() {
     const { fetchOrders, order } = useProduct();

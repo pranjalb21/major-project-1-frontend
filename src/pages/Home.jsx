@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import useProduct from "../contexts/ProductContext";
+import { TITLE } from "../lib/constants";
 
 export const categories = [
     {

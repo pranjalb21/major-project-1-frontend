@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import useProduct from "../contexts/ProductContext";
 import { Link, useNavigate } from "react-router-dom";
 import SuccessfullOrder from "../components/SuccessfullOrder";
+import { TITLE } from "../lib/constants";
 
 export default function Checkout() {
     useEffect(() => {
