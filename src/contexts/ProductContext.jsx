@@ -6,6 +6,7 @@ import {
     useState,
 } from "react";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ProductContext = createContext();
 
@@ -36,7 +37,7 @@ export function ProductProvider({ children }) {
 
     // Loading related states
     const [loading, setLoading] = useState(false);
-    const [actionLoader, setActionLoader] = useState(false);
+    const [actionLoader, setActionLoader] = useState(true);
 
     // Product filter related variables
     const [searchParams, setSearchParams] = useSearchParams();
@@ -115,6 +116,7 @@ export function ProductProvider({ children }) {
             params.delete("page");
             return params;
         });
+        toast.info("Filters cleared...!!!");
     };
 
     // Fetch wishlisted and items added to cart for showing count on navbar
@@ -139,7 +141,7 @@ export function ProductProvider({ children }) {
                 setProductList(data.data);
                 setTotalPages(Math.ceil(data.totalCount / ITEMSPERPAGE));
             })
-            .catch((err) => console.log(err))
+            .catch((err) => toast.error("Failed to fetch products."))
             .finally(() => setLoading(false));
     };
 
@@ -150,7 +152,7 @@ export function ProductProvider({ children }) {
         await fetch(`http://localhost:5000/products/id/${productId}`)
             .then((res) => res.json())
             .then((data) => setSelectedProduct(data.data))
-            .catch((err) => console.log(err))
+            .catch((err) => toast.error("Unable to fetch product."))
             .finally(() => setLoading(false));
     };
 
@@ -160,7 +162,7 @@ export function ProductProvider({ children }) {
         await fetch(`http://localhost:5000/order/all`)
             .then((res) => res.json())
             .then((data) => setOrder(data.data))
-            .catch((err) => console.log(err))
+            .catch((err) => toast.error("Unable to fetch orders."))
             .finally(() => setLoading(false));
     };
 
@@ -170,7 +172,7 @@ export function ProductProvider({ children }) {
         await fetch(`http://localhost:5000/order/${orderId}`)
             .then((res) => res.json())
             .then((data) => setSelectedOrder(data.data))
-            .catch((err) => console.log(err))
+            .catch((err) => toast.error("Unable to fetch order."))
             .finally(() => setLoading(false));
     };
 
@@ -185,14 +187,19 @@ export function ProductProvider({ children }) {
             body: JSON.stringify(orderDetails),
         })
             .then((res) => res.json())
-            .then((data) => data.data)
-            .catch((err) => console.log(err));
+            .then((data) => {
+                toast.success("Order placed successfully...!!!");
+                return data.data;
+            })
+            .catch((err) =>
+                toast.error("Something went wrong. Please try again.")
+            );
         if (postedOrder) {
             await fetch(`http://localhost:5000/cart/all`, { method: "DELETE" });
         }
         setLoading(false);
         await fetchCart();
-        await fetchWishlist();
+        // await fetchWishlist();
     };
 
     // Fetch addresses
@@ -202,7 +209,7 @@ export function ProductProvider({ children }) {
         await fetch(`http://localhost:5000/address/all`)
             .then((res) => res.json())
             .then((data) => setAddresses(data.data))
-            .catch((err) => console.log(err))
+            .catch((err) => toast.error("Faile to load address."))
             .finally(() => setLoading(false));
     };
 
@@ -210,7 +217,7 @@ export function ProductProvider({ children }) {
     const addAddress = async (addressData) => {
         setLoading(true);
 
-        const newAddresses = await fetch(`http://localhost:5000/address/add`, {
+        await fetch(`http://localhost:5000/address/add`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -218,11 +225,12 @@ export function ProductProvider({ children }) {
             body: JSON.stringify(addressData),
         })
             .then((res) => res.json())
-            .then((data) => data.data)
-            .catch((err) => console.log(err))
+            .then((data) => {
+                setAddresses(data.data);
+                toast.success("Address added successfully...!!!");
+            })
+            .catch((err) => toast.error("Failed to add address."))
             .finally(() => setLoading(false));
-
-        setAddresses(newAddresses);
     };
 
     // Update address
@@ -239,36 +247,30 @@ export function ProductProvider({ children }) {
             }
         )
             .then((res) => res.json())
-            .then((data) => data.data)
-            .catch((err) => console.log(err));
-
-        if (newAddresses) {
-            setAddresses(newAddresses);
-        } else {
-            console.log("Error while adding to cart");
-        }
-        setLoading(false);
+            .then((data) => {
+                setAddresses(data.data);
+                toast.success("Address updated successfully...!!!");
+            })
+            .catch((err) => toast.error("Failed to update address."))
+            .finally(() => setLoading(false));
     };
 
     // Change primary address
     const changePrimaryAddress = async (addressId) => {
         setLoading(true);
-        const newAddresses = await fetch(
+        await fetch(
             `http://localhost:5000/address/change/primaryAddress/${addressId}`,
             {
                 method: "POST",
             }
         )
             .then((res) => res.json())
-            .then((data) => data.data)
-            .catch((err) => console.log(err));
-
-        if (newAddresses) {
-            setAddresses(newAddresses);
-        } else {
-            console.log("Error while adding to cart");
-        }
-        setLoading(false);
+            .then((data) => {
+                setAddresses(data.data);
+                toast.success("Primary address changed successfully...!!!");
+            })
+            .catch((err) => toast.error("Failed to change primary address."))
+            .finally(() => setLoading(false));
     };
 
     // Delete address
@@ -282,7 +284,7 @@ export function ProductProvider({ children }) {
         )
             .then((res) => res.json())
             .then((data) => data.data)
-            .catch((err) => console.log(err));
+            .catch((err) => toast.error("Unable to delete address."));
         if (deletedAddress) {
             const addressIndex = addresses?.findIndex(
                 (address) => address._id === deletedAddress._id
@@ -290,24 +292,9 @@ export function ProductProvider({ children }) {
             const newAddresses = [...addresses];
             newAddresses.splice(addressIndex, 1);
             setAddresses(newAddresses);
-        } else {
-            console.log("Error while adding to cart");
+            toast.success("Address deleted successfully...!!!");
         }
         setLoading(false);
-    };
-
-    // Add and remove from cart
-    const toggleCart = async (productId) => {
-        if (isExistInCart(productId)) {
-        }
-        const newProductList = productList.map((p) => {
-            if (p.id == productId) {
-                return { ...p, isAddedToCart: !p.isAddedToCart };
-            } else {
-                return p;
-            }
-        });
-        setProductList(newProductList);
     };
 
     // Add item in cart
@@ -319,7 +306,7 @@ export function ProductProvider({ children }) {
         )
             .then((res) => res.json())
             .then((data) => data.data)
-            .catch((err) => console.log(err));
+            .catch((err) => toast.error("Error while adding item to cart."));
 
         if (addedItem) {
             if (isExistInCart(productId)) {
@@ -336,8 +323,7 @@ export function ProductProvider({ children }) {
                 setCart(newCart);
             }
             setCartTotalCount((count) => count + 1);
-        } else {
-            console.log("Error while adding to cart");
+            toast.success("Item added to cart.");
         }
         setLoading(false);
     };
@@ -354,7 +340,7 @@ export function ProductProvider({ children }) {
         )
             .then((res) => res.json())
             .then((data) => data.data)
-            .catch((err) => console.log(err));
+            .catch((err) => toast.error("Error while adding item to cart."));
 
         if (addedItem) {
             if (isExistInCart(productId)) {
@@ -374,8 +360,7 @@ export function ProductProvider({ children }) {
             let newCount = cartTotalCount + addedItem.productCount;
 
             setCartTotalCount(newCount);
-        } else {
-            console.log("Error while adding to cart");
+            toast.success("Item added to cart...!!!");
         }
         setLoading(false);
     };
@@ -389,7 +374,9 @@ export function ProductProvider({ children }) {
         )
             .then((res) => res.json())
             .then((data) => data.data)
-            .catch((err) => console.log(err));
+            .catch((err) =>
+                toast.error("Error while removing items from cart.")
+            );
         if (deletedItem) {
             if (deletedItem.productCount > 0) {
                 const existingProductIndex = cart.findIndex(
@@ -405,8 +392,7 @@ export function ProductProvider({ children }) {
                 setCart(newCart);
             }
             setCartTotalCount((count) => count - 1);
-        } else {
-            console.log("Error while removing from cart");
+            toast.info("Item removed from cart...!!!");
         }
         setLoading(false);
     };
@@ -419,7 +405,7 @@ export function ProductProvider({ children }) {
         )
             .then((res) => res.json())
             .then((data) => data.data)
-            .catch((err) => console.log(err));
+            .catch((err) => toast.error("Unable to delete item from cart."));
         if (deletedItem) {
             const deletedCartItem = cart.filter(
                 (cartItem) => cartItem.productId._id == productId
@@ -431,8 +417,7 @@ export function ProductProvider({ children }) {
             setCartTotalCount(
                 (count) => count - deletedCartItem[0].productCount
             );
-        } else {
-            console.log("Error while deleting from cart");
+            toast.info("Item deleted from cart...!!!");
         }
         setLoading(false);
     };
@@ -451,8 +436,11 @@ export function ProductProvider({ children }) {
                     );
                     setWishlist(newWishlist);
                     setWishlistTotalCount((count) => count - 1);
+                    toast.info("Item removed from wishlist...!!!");
                 })
-                .catch((err) => console.log(err))
+                .catch((err) =>
+                    toast.error("Unable to remove item from wishlist.")
+                )
                 .finally(() => setLoading(false));
         } else {
             await fetch(`http://localhost:5000/wishlist/add/${productId}`, {
@@ -463,8 +451,9 @@ export function ProductProvider({ children }) {
                     const newWishlist = [...wishlist, data.data];
                     setWishlist(newWishlist);
                     setWishlistTotalCount((count) => count + 1);
+                    toast.success("Item added to wishlist...!!!");
                 })
-                .catch((err) => console.log(err))
+                .catch((err) => toast.error("Unable to add item to wishlist."))
                 .finally(() => setLoading(false));
         }
     };
@@ -497,7 +486,7 @@ export function ProductProvider({ children }) {
                 setWishlist(data.data);
                 setWishlistTotalCount(data.totalCount);
             })
-            .catch((err) => console.log(err))
+            .catch((err) => toast.error("Unable to fetch wishlist."))
             .finally(() => setLoading(false));
     };
 
@@ -515,7 +504,7 @@ export function ProductProvider({ children }) {
                 );
                 setCartTotalCount(newCount);
             })
-            .catch((err) => console.log(err))
+            .catch((err) => toast.error("Unable to fetch cart items."))
             .finally(() => setLoading(false));
     };
 
@@ -552,7 +541,6 @@ export function ProductProvider({ children }) {
                 updateAddress,
                 deleteAddress,
                 changePrimaryAddress,
-                toggleCart,
                 toggleWishList,
                 addItemToCart,
                 removeItemFromCart,

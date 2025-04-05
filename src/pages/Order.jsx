@@ -7,9 +7,6 @@ export default function Order() {
     useEffect(() => {
         fetchOrders();
     }, []);
-    // useEffect(() => {
-    //     console.log(order);
-    // }, [order]);
     return (
         <main className="container mt-3 mb-4">
             <div className="shadow p-3">

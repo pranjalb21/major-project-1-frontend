@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Profile from "./pages/Profile";
@@ -14,6 +14,10 @@ import Spinner from "./components/Spinner";
 import Order from "./pages/Order";
 import OrderDetails from "./pages/OrderDetails";
 import ProductsPage from "./pages/ProductsPage";
+import { ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/ReactToastify.css";
+import "./index.css";
+
 
 function App() {
     const { loading } = useProduct();
@@ -33,6 +37,20 @@ function App() {
                 <Route path="/products" element={<ProductsPage />} />
             </Routes>
             <Footer />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition={Bounce}
+                bodyClassName="toastBody"
+            />
         </div>
     );
 }

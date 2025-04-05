@@ -53,97 +53,144 @@ export default function OrderDetails() {
             0
         );
     };
+
+    const calculateTotalItems = (items) => {
+        return items.reduce(
+            (acc, curr) => acc + parseInt(curr.productCount),
+            0
+        );
+    };
     return (
-        <main className="my-3">
-            <section>
+        <main className="py-3 container h-100">
+            <div className="bg-white py-4 px-3 shadow h-100">
                 {selectedOrder && selectedOrder ? (
-                    <div className="shadow p-3 container bg-white">
-                        <h2 className="fs-2">Order Details</h2>
-                        <hr />
-                        <h4 className="fs-5">
-                            Order ID : {selectedOrder.orderId}
-                        </h4>
-                        <p>Shipped Address: {selectedOrder.shippingAddress}</p>
-                        <hr />
-                        <div>
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Sl No.</th>
-                                        <th scope="col">Product Name</th>
-                                        <th scope="col" className="text-center">
-                                            Quantity
-                                        </th>
-                                        <th scope="col">MRP</th>
-                                        <th scope="col">Discount(%)</th>
-                                        <th scope="col">Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {selectedOrder?.items?.map((item, i) => (
-                                        <tr key={item.productId._id}>
-                                            <th scope="row">{i + 1}</th>
-                                            <td>
-                                                <Link
-                                                    className="text-decoration-none"
-                                                    to={`/product/${item.productId._id}`}
-                                                >
-                                                    {item.productId.title}
-                                                </Link>
-                                            </td>
-                                            <td className="text-center">
-                                                {item.productCount}
-                                            </td>
-                                            <td>${item.productId.price}</td>
-                                            <td>
-                                                {
-                                                    item.productId
-                                                        .discountPercentage
-                                                }
-                                            </td>
-                                            <td>
-                                                <s>
-                                                    $
-                                                    {item.productId.price *
-                                                        item.productCount}
-                                                </s>
-                                                <br /> $
-                                                {calculateDiscountPrice(item)}
-                                            </td>
+                    <>
+                        <h5 className="fs-5">
+                            Order <span>#{selectedOrder.orderId}</span>
+                        </h5>
+                        <hr className="m-0" />
+                        <div className="row g-2">
+                            <div className="col-lg-8 px-2">
+                                <table className="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" className="px-4">
+                                                Item
+                                            </th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">MRP</th>
+                                            <th scope="col">Your Price</th>
                                         </tr>
-                                    ))}
-                                    <tr>
-                                        <th scope="row"></th>
-                                        <td className="fw-medium">Total:</td>
-                                        <td className="fw-medium text-center">
-                                            {calculateTotalQuantity(
-                                                selectedOrder.items
-                                            )}
-                                        </td>
-                                        <td>
-                                            <s>
-                                                $
-                                                {calculateTotalPrice(
-                                                    selectedOrder.items
-                                                )}
-                                            </s>
-                                        </td>
-                                        <td></td>
-                                        <td className="fw-medium">
-                                            $
-                                            {calculateTotalDiscountedPrice(
-                                                selectedOrder.items
-                                            )}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="">
+                                        {selectedOrder?.items?.map((item) => (
+                                            <tr key={item.productId._id}>
+                                                <td>
+                                                    <div className="row">
+                                                        <div className="col-4">
+                                                            <img
+                                                                src={
+                                                                    item
+                                                                        .productId
+                                                                        .thumbnail
+                                                                }
+                                                                alt={
+                                                                    item
+                                                                        .productId
+                                                                        .title
+                                                                }
+                                                                className="img-fluid"
+                                                            />
+                                                        </div>
+                                                        <div className="col-6">
+                                                            <Link
+                                                                className="text-decoration-none"
+                                                                to={`/product/${item.productId._id}`}
+                                                            >
+                                                                {
+                                                                    item
+                                                                        .productId
+                                                                        .title
+                                                                }
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="text-center">
+                                                    {item.productCount}
+                                                </td>
+                                                <td>${item.productId.price}</td>
+                                                <td>
+                                                    <s>
+                                                        $
+                                                        {parseFloat(
+                                                            item.productId
+                                                                .price *
+                                                                item.productCount
+                                                        ).toFixed(2)}
+                                                    </s>
+                                                    <br /> $
+                                                    {calculateDiscountPrice(
+                                                        item
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="col-lg-4 px-2">
+                                <div className="w-100">
+                                    <div className="mt-">
+                                        <p className="m-0 fw-medium">
+                                            Shipped Address:
+                                        </p>
+                                        <p>{selectedOrder.shippingAddress}</p>
+                                    </div>
+                                </div>
+                                <div className="mt-2">
+                                    <p className="m-0 px-2 fs-5">Details:</p>
+                                    <hr className="m-1" />
+                                    <table className="table mt-0">
+                                        <tbody>
+                                            <tr>
+                                                <td scope="row">
+                                                    Total Items:
+                                                </td>
+                                                <td className="text-end">
+                                                    {calculateTotalItems(
+                                                        selectedOrder?.items
+                                                    )}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td scope="row">MRP:</td>
+                                                <td className="text-end">
+                                                    $&nbsp;
+                                                    {calculateTotalPrice(
+                                                        selectedOrder?.items
+                                                    )}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td scope="row">Your Price:</td>
+                                                <td className="text-end">
+                                                    $&nbsp;
+                                                    {
+                                                        selectedOrder.totalOrderPrice
+                                                    }
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </>
                 ) : (
                     <p>Order not found.</p>
                 )}
-            </section>
+            </div>
         </main>
     );
 }

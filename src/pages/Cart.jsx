@@ -84,7 +84,7 @@ export default function Cart() {
                                             <th scope="col">Price</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="table-group-divider">
+                                    <tbody className="">
                                         {cart?.map((p, i) => (
                                             <>
                                                 <tr key={p.productId._id}>
@@ -147,7 +147,7 @@ export default function Cart() {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="col-lg-4 border-start px-2">
+                            <div className="col-lg-4 px-2">
                                 <div className="w-100">
                                     <div className="mt-">
                                         <p className="m-0">
@@ -194,31 +194,35 @@ export default function Cart() {
                                     <table className="table mt-0">
                                         <tbody>
                                             <tr>
-                                                <td scope="row">Total Items:</td>
-                                                <td className="text-end">{cartTotalCount}</td>
+                                                <td scope="row">
+                                                    Total Items:
+                                                </td>
+                                                <td className="text-end">
+                                                    {cartTotalCount}
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td scope="row">MRP Price:</td>
-                                                <td className="text-end"><s>${calculateTotalPrice(cart)}</s></td>
+                                                <td className="text-end">
+                                                    <s>
+                                                        $
+                                                        {calculateTotalPrice(
+                                                            cart
+                                                        )}
+                                                    </s>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td scope="row">Your Price:</td>
-                                                <td className="text-end">${calculateTotalDiscountedPrice(cart)}</td>
+                                                <td className="text-end">
+                                                    $
+                                                    {calculateTotalDiscountedPrice(
+                                                        cart
+                                                    )}
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
-
-                                    {/* <td className="fw-medium">Total:</td>
-                                    <td className="fw-medium text-center">
-                                        {calculateTotalQuantity(cart)}
-                                    </td>
-                                    <td>
-                                        <s>${calculateTotalPrice(cart)}</s>
-                                    </td>
-                                    <td></td>
-                                    <td className="fw-medium">
-                                        ${calculateTotalDiscountedPrice(cart)}
-                                    </td> */}
                                 </div>
                                 <div className="row g-1 mt-2">
                                     <div className="col-lg-6">
@@ -238,81 +242,6 @@ export default function Cart() {
                                 </div>
                             </div>
                         </div>
-                        {/* <h2 className="fs-3">Cart</h2> */}
-                        {/* <table className="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Sl No.</th>
-                                    <th scope="col">Product Name</th>
-                                    <th scope="col" className="text-center">
-                                        Quantity
-                                    </th>
-                                    <th scope="col">MRP</th>
-                                    <th scope="col">Discount(%)</th>
-                                    <th scope="col">Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {cart?.map((p, i) => (
-                                    <tr key={p.productId._id}>
-                                        <th scope="row">{i + 1}</th>
-                                        <td>
-                                            <Link
-                                                className="text-decoration-none"
-                                                to={`/product/${p.productId._id}`}
-                                            >
-                                                {p.productId.title}
-                                            </Link>
-                                        </td>
-                                        <td>
-                                            <CountModifier product={p} />
-                                        </td>
-                                        <td>${p.productId.price}</td>
-                                        <td>
-                                            {p.productId.discountPercentage}
-                                        </td>
-                                        <td>
-                                            <s>
-                                                $
-                                                {p.productId.price *
-                                                    p.productCount}
-                                            </s>
-                                            <br /> ${calculateDiscountPrice(p)}
-                                        </td>
-                                    </tr>
-                                ))}
-                                <tr>
-                                    <th scope="row"></th>
-                                    <td className="fw-medium">Total:</td>
-                                    <td className="fw-medium text-center">
-                                        {calculateTotalQuantity(cart)}
-                                    </td>
-                                    <td>
-                                        <s>${calculateTotalPrice(cart)}</s>
-                                    </td>
-                                    <td></td>
-                                    <td className="fw-medium">
-                                        ${calculateTotalDiscountedPrice(cart)}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div className="row g-3">
-                            <div className="col-md-6">
-                                <Link to={"/"}>
-                                    <button className="btn btn-info btn-sm col-12">
-                                        Continue Shopping
-                                    </button>
-                                </Link>
-                            </div>
-                            <div className="col-md-6">
-                                <Link to={"/checkout"}>
-                                    <button className="btn btn-warning btn-sm col-12">
-                                        Proceed to Checkout
-                                    </button>
-                                </Link>
-                            </div>
-                        </div> */}
                     </>
                 ) : (
                     <p>No items in cart</p>
