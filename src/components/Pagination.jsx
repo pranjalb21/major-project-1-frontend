@@ -17,6 +17,7 @@ export default function Pagination() {
                     className={`page-item page-link ${
                         pageFilter <= 1 ? "disabled" : ""
                     }`}
+                    style={{ cursor: "pointer" }}
                 >
                     Previous
                 </li>
@@ -29,6 +30,7 @@ export default function Pagination() {
                             }`}
                             key={index + 1}
                             onClick={() => handlePageNumber(index + 1)}
+                            style={{ cursor: "pointer" }}
                         >
                             {index + 1}
                         </li>
@@ -38,6 +40,7 @@ export default function Pagination() {
                     className={`page-item page-link ${
                         pageFilter >= totalPages ? "disabled" : ""
                     }`}
+                    style={{ cursor: "pointer" }}
                 >
                     Next
                 </li>
