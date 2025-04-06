@@ -1,9 +1,4 @@
-import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { BASE_URL, ITEMSPERPAGE } from "../lib/constants";
@@ -256,12 +251,9 @@ export function ProductProvider({ children }) {
     // Change primary address
     const changePrimaryAddress = async (addressId) => {
         setLoading(true);
-        await fetch(
-            `${BASE_URL}/address/change/primaryAddress/${addressId}`,
-            {
-                method: "POST",
-            }
-        )
+        await fetch(`${BASE_URL}/address/change/primaryAddress/${addressId}`, {
+            method: "POST",
+        })
             .then((res) => res.json())
             .then((data) => {
                 setAddresses(data.data);
@@ -298,10 +290,9 @@ export function ProductProvider({ children }) {
     // Add item in cart
     const addItemToCart = async (productId) => {
         setLoading(true);
-        const addedItem = await fetch(
-            `${BASE_URL}/cart/add/${productId}`,
-            { method: "POST" }
-        )
+        const addedItem = await fetch(`${BASE_URL}/cart/add/${productId}`, {
+            method: "POST",
+        })
             .then((res) => res.json())
             .then((data) => data.data)
             .catch((err) => toast.error("Error while adding item to cart."));

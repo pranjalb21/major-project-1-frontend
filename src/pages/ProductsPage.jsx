@@ -4,12 +4,12 @@ import DesktopFilter from "../components/DesktopFilter";
 import MobileFilter from "../components/MobileFilter";
 import Pagination from "../components/Pagination";
 import useProduct from "../contexts/ProductContext";
-import { TITLE } from "../lib/constants";
+import { BASE_URL, TITLE } from "../lib/constants";
 
 export default function ProductsPage() {
     const { searchParams, fetchProduct, totalPages } = useProduct();
     const createUrl = () => {
-        const baseUrl = "${BASE_URL}/products";
+        const baseUrl = `${BASE_URL}/products`;
         const queryString = searchParams.toString();
 
         return `${baseUrl}?${queryString}`;
